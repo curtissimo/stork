@@ -24,3 +24,11 @@ exports['test deliver fails with non-function second argument'] = function(t) {
 	});
 	t.done();
 };
+
+exports['test deliver returns an object'] = function(t) {
+	var Thing = odm.deliver('thing');
+
+	Thing.should.be.ok;
+
+	t.done();
+};
