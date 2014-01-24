@@ -62,9 +62,36 @@ exports['entity has new function'] = {
 			, keys = Object.keys(proto)
 			, user = this.User.new(id, proto)
 			;
-		proto[id] = id;
 
+
+		user.should.have.property('id', id);
 		keys.forEach(function(key) {
+			if(typeof proto[key] === 'function') {
+				user.should.not.have.property(key);
+				return;
+			}
+			user.should.have.property(key, proto[key]);
+		});
+		t.done();
+	}
+, 'when invoked with a string and object that contains an id, ignores the id in the proto': function(t) {
+		var proto = {
+					name: 'mary'
+				, age: 26
+				, id: 'foo'
+				, saySomething: function() {console.log("Cool!");}
+				}
+			, id = util.randomString(10)
+			, keys = Object.keys(proto)
+			, user = this.User.new(id, proto)
+			;
+
+
+		user.should.have.property('id', id);
+		keys.forEach(function(key) {
+			if(key === 'id') {
+				return;
+			}
 			if(typeof proto[key] === 'function') {
 				user.should.not.have.property(key);
 				return;
