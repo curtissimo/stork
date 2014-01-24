@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/realistschuckle/stork.png?branch=master)](https://travis-ci.org/realistschuckle/stork)
+
 stork
 =====
 
