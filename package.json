@@ -10,16 +10,20 @@
     "couchdb",
     "odm"
   ],
-  "author": {
-    "name": "Curtis Schlak",
-    "email": "curtis@curtissimo.com"
-  },
   "contributors": [{
-    "name": "Bryan Ray"
+    "name": "Curtis Schlak",
+    "web": "http://curtis.schlak.com"
+  },{
+    "name": "Bryan Ray",
+    "web": "http://bryanray.net"
   }],
   "license": "BSD-3-Clause",
   "devDependencies": {
     "nodeunit": "~0.8.3",
     "should": "~3.1.0"
-  }
+  },
+  "repositories": [{
+    "type": "git",
+    "url": "https://github.com/realistschuckle/stork.git"
+  }]
 }
