@@ -1,8 +1,6 @@
-<div style="float: right">
 <a href="https://travis-ci.org/realistschuckle/stork">
-<img src="https://travis-ci.org/realistschuckle/stork.png?branch=master" alt="Build Status">
+<img src="https://travis-ci.org/realistschuckle/stork.png?branch=master" align="right" alt="Build Status">
 </a>
-</div>
 
 stork
 =====
