@@ -1,7 +1,7 @@
 language: node_js
 node_js:
-	- "0.10"
+  - "0.10"
 services:
-	- couchdb
+  - couchdb
 before_script:
-	curl -X PUT localhost:5984/stork_test
+  curl -X PUT localhost:5984/stork_test
