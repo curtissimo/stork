@@ -26,9 +26,11 @@ var odm = require('stork')
 
 var User = odm.deliver('user');
 
-// or, if you want some validation for the values of your entity
+// or, if you want some validation and views for the values of your entity
 
 var User = odm.deliver('user', function() {
-  // validation of properties defined here
+  // property validation defined here
+  // views defined here
+  // instance method defined here
 });
 ```
