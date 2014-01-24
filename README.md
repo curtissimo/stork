@@ -1,4 +1,8 @@
-[![Build Status](https://travis-ci.org/realistschuckle/stork.png?branch=master)](https://travis-ci.org/realistschuckle/stork)
+<div style="float: right">
+<a href="https://travis-ci.org/realistschuckle/stork">
+<img src="https://travis-ci.org/realistschuckle/stork.png?branch=master" alt="Build Status">
+</a>
+</div>
 
 stork
 =====
