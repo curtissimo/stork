@@ -68,7 +68,7 @@ exports['bool property builder applies not required'] = function(t) {
 	t.done();
 };
 
-exports['bool property builder applies not required'] = function(t) {
+exports['bool property builder applies nullable'] = function(t) {
 	var Discussion = odm.deliver('discussion', function() {
 				this.bool('sticky', {nullable: true});
 			})
@@ -82,5 +82,18 @@ exports['bool property builder applies not required'] = function(t) {
 	properties.sticky.type.should.have.length(2);
 	properties.sticky.type.should.containEql('bool');
 	properties.sticky.type.should.containEql('null');
+	t.done();
+};
+
+exports['bool property builder does nothing with not nullable'] = function(t) {
+	var Discussion = odm.deliver('discussion', function() {
+				this.bool('sticky', {nullable: false});
+			})
+	  , discussion = Discussion.new()
+	  , properties = discussion['$schema'].properties
+	  ;
+
+	properties.should.have.property('sticky');
+	properties.sticky.should.have.property('type', 'bool');
 	t.done();
 };
