@@ -352,4 +352,33 @@ exports['number property builder'] = {
 		properties.weight.should.not.have.property('divisibleBy');
 		t.done();
 	}
+, 'works with instances': function(t) {
+		var options = {
+		      nullable: true
+			  , minimum: 123
+				, exclusiveMaximum: 126
+				, divisibleBy: 2	
+				}
+		  , Vehicle = odm.deliver('vehicle', function() {
+					this.number('weight', options);
+				})
+		  , vehicle = Vehicle.new()
+		  , weights = [null
+		  	, 122
+		  	, 123
+		  	, 124
+		  	, 125
+		  	, 126
+		  	]
+		  , results = [true, false, false, true, false, false]
+		  ;
+
+		vehicle.validate().valid.should.be.true;
+
+		weights.forEach(function(weight, i) {
+			vehicle.weight = weight;
+			vehicle.validate().valid.should.be[results[i]];
+		});
+		t.done();
+	}
 };
