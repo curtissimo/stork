@@ -5,7 +5,7 @@ var should = require('should')
 var odm = require('../lib/stork')
 	;
 
-exports['bool property builder has bool method'] = function(t) {
+exports['schema builder has bool method'] = function(t) {
 	var called = false;
 	odm.deliver('discussion', function() {
 		called = true;
@@ -33,7 +33,7 @@ exports['bool property builder generates an instance in the schema'] = function(
 	  ;
 
 	properties.should.have.property('sticky');
-	properties.sticky.should.have.property('type', 'bool');
+	properties.sticky.should.have.property('type', 'boolean');
 	properties.sticky.should.not.have.property('required');
 	t.done();
 };
@@ -47,7 +47,7 @@ exports['bool property builder applies required'] = function(t) {
 	  ;
 
 	properties.should.have.property('sticky');
-	properties.sticky.should.have.property('type', 'bool');
+	properties.sticky.should.have.property('type', 'boolean');
 	properties.sticky.should.have.property('required');
 	properties.sticky.required.should.be.true;
 	t.done();
@@ -62,7 +62,7 @@ exports['bool property builder applies not required'] = function(t) {
 	  ;
 
 	properties.should.have.property('sticky');
-	properties.sticky.should.have.property('type', 'bool');
+	properties.sticky.should.have.property('type', 'boolean');
 	properties.sticky.should.have.property('required');
 	properties.sticky.required.should.be.false;
 	t.done();
@@ -80,7 +80,7 @@ exports['bool property builder applies nullable'] = function(t) {
 	properties.sticky.should.have.property('type');
 	properties.sticky.type.should.be.an.Array;
 	properties.sticky.type.should.have.length(2);
-	properties.sticky.type.should.containEql('bool');
+	properties.sticky.type.should.containEql('boolean');
 	properties.sticky.type.should.containEql('null');
 	t.done();
 };
@@ -94,6 +94,30 @@ exports['bool property builder does nothing with not nullable'] = function(t) {
 	  ;
 
 	properties.should.have.property('sticky');
-	properties.sticky.should.have.property('type', 'bool');
+	properties.sticky.should.have.property('type', 'boolean');
+	t.done();
+};
+
+exports['bool property builder works with instances'] = function(t) {
+	var Discussion = odm.deliver('discussion', function() {
+				this.bool('sticky', {required: true});
+			})
+	  , discussion = Discussion.new({sticky: true})
+	  , validation = discussion.validate()
+	  , error
+	  ;
+
+	validation.valid.should.be.true;
+
+	discussion = Discussion.new();
+	validation = discussion.validate({sticky: 'margarine'});
+	validation.valid.should.be.false;
+	validation.errors.should.have.length(1);
+	error = validation.errors[0];
+	error.should.have.property('attribute', 'required');
+	error.should.have.property('property', 'sticky');
+	error.should.have.property('expected', true);
+	error.should.have.property('message', 'is required');
+
 	t.done();
 };

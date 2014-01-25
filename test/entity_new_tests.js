@@ -20,17 +20,17 @@ exports['entity has #new'] = {
 		user.should.have.property('kind', this.expectedKind);
 		t.done();
 	}
-, 'invoked with no parameters, has no id': function(t) {
+, 'invoked with no parameters, has no _id': function(t) {
 		var user = this.User.new();
-		user.should.not.have.property('id');
+		user.should.not.have.property('_id');
 		t.done();
 	}
-, 'invoked with a string, has an id of the passed value': function(t) {
+, 'invoked with a string, has an _id of the passed value': function(t) {
 		var randomId = Math.random().toString()
 			,	user = this.User.new(randomId)
 			;
 
-		user.should.have.property('id', randomId);
+		user.should.have.property('_id', randomId);
 		t.done();
 	}
 ,	'invoked with an object, gets the object\'s non-function props': function(t) {
@@ -38,6 +38,7 @@ exports['entity has #new'] = {
 					name: 'bob'
 				, age: 34
 				, saySomething: function() {console.log("HEY!");}
+				, _id: 'satchmo'
 				}
 			, keys = Object.keys(proto)
 			, user = this.User.new(proto)
@@ -52,7 +53,7 @@ exports['entity has #new'] = {
 		});
 		t.done();
 	}
-, 'invoked with a string and object, makes an id and mixins': function(t) {
+, 'invoked with a string and object, makes an _id and mixins': function(t) {
 		var proto = {
 					name: 'mary'
 				, age: 26
@@ -64,7 +65,7 @@ exports['entity has #new'] = {
 			;
 
 
-		user.should.have.property('id', id);
+		user.should.have.property('_id', id);
 		keys.forEach(function(key) {
 			if(typeof proto[key] === 'function') {
 				user.should.not.have.property(key);
@@ -74,11 +75,11 @@ exports['entity has #new'] = {
 		});
 		t.done();
 	}
-, 'invoked with a string and object with id, ignores object id': function(t) {
+, 'invoked with a string and object with _id, ignores object _id': function(t) {
 		var proto = {
 					name: 'mary'
 				, age: 26
-				, id: 'foo'
+				, _id: 'foo'
 				, saySomething: function() {console.log("Cool!");}
 				}
 			, id = util.randomString(10)
@@ -87,9 +88,9 @@ exports['entity has #new'] = {
 			;
 
 
-		user.should.have.property('id', id);
+		user.should.have.property('_id', id);
 		keys.forEach(function(key) {
-			if(key === 'id') {
+			if(key === '_id') {
 				return;
 			}
 			if(typeof proto[key] === 'function') {
