@@ -1,6 +1,9 @@
 <a href="https://travis-ci.org/realistschuckle/stork">
 <img src="https://travis-ci.org/realistschuckle/stork.png?branch=master" align="right" alt="Build Status">
 </a>
+<a href="https://travis-ci.org/realistschuckle/stork">
+<img src="https://travis-ci.org/realistschuckle/stork.png?branch=develop" align="right" alt="Build Status">
+</a>
 
 stork
 =====
