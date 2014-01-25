@@ -17,7 +17,7 @@ exports['schema builder has id method'] = function(t) {
 		this.should.have.property('id');
 		this.id.should.be.a.Function;
 		args.forEach(function(arg) {
-			self.id.bind({}, arg).should.throw('id requires a configuration spec');
+			self.id.bind(null, arg).should.throw('id requires a configuration spec');
 		});
 	});
 	called.should.be.true;
@@ -77,9 +77,9 @@ exports['id builder allows for maximum length'] = function(t) {
 	t.done();
 };
 
-exports['id builder allows for format'] = function(t) {
+exports['id builder does not respect required'] = function(t) {
 	var Ghost = odm.deliver('ghost', function() {
-				this.id({format: 'email'});
+				this.id({required: true});
 			})
 	  , annie = Ghost.new({name: 'annie'})
 	  , properties = annie['$schema'].properties
@@ -91,7 +91,67 @@ exports['id builder allows for format'] = function(t) {
 	properties._id.type.should.be.Array;
 	properties._id.type.should.containEql('string');
 	properties._id.type.should.containEql('null');
-	properties._id.should.have.property('format', 'email');
+	properties._id.should.not.have.property('maxLength');
+	t.done();
+};
+
+exports['id builder allows for format'] = function(t) {
+	var goodFormats = [
+				'url', 'email', 'ip-address', 'ipv6', 'date-time', 'date', 'time'
+			, 'color', 'host-name', 'utc-millisec',
+			]
+		, otherGoodFormats = [
+				/abc/
+			]
+		, badFormats = [{}, [1, 2, 3], true, null, 5, 'whatever']
+	  ;
+
+	otherGoodFormats.forEach(function(format) {
+		var Discussion = odm.deliver('discussion', function() {
+					this.id({format: format});
+				})
+		  , discussion = Discussion.new()
+		  , properties = discussion['$schema'].properties
+		  ;
+		properties.should.have.property('_id');
+		properties._id.should.have.property('type', ['string', 'null']);
+		properties._id.should.not.have.property('required');
+		properties._id.should.not.have.property('format');
+		properties._id.should.not.have.property('minLength');
+		properties._id.should.not.have.property('maxLength');
+		properties._id.should.have.property('pattern');
+		properties._id.pattern.toString().should.equal(/abc/.toString());
+	});
+
+	goodFormats.forEach(function(format) {
+		var Discussion = odm.deliver('discussion', function() {
+					this.id({format: format});
+				})
+		  , discussion = Discussion.new()
+		  , properties = discussion['$schema'].properties
+		  ;
+		properties.should.have.property('_id');
+		properties._id.should.have.property('type', ['string', 'null']);
+		properties._id.should.not.have.property('required');
+		properties._id.should.have.property('format', format);
+		properties._id.should.not.have.property('minLength');
+		properties._id.should.not.have.property('maxLength');
+	});
+
+	badFormats.forEach(function(format) {
+		var Discussion = odm.deliver('discussion', function() {
+					this.id({format: format});
+				})
+		  , discussion = Discussion.new()
+		  , properties = discussion['$schema'].properties
+		  ;
+		properties.should.have.property('_id');
+		properties._id.should.have.property('type', ['string', 'null']);
+		properties._id.should.not.have.property('required');
+		properties._id.should.not.have.property('format');
+		properties._id.should.not.have.property('minLength');
+		properties._id.should.not.have.property('maxLength');
+	});
 	t.done();
 };
 
