@@ -5,7 +5,7 @@ var should = require('should')
 var odm = require('../lib/stork')
 	;
 
-exports['entity has new function'] = {
+exports['entity has #new'] = {
 	setUp: function(cb) {
 		this.expectedKind = util.randomString(10)
 		this.User = odm.deliver(this.expectedKind);
@@ -20,12 +20,12 @@ exports['entity has new function'] = {
 		user.should.have.property('kind', this.expectedKind);
 		t.done();
 	}
-, 'when invoked with no parameters, has no id': function(t) {
+, 'invoked with no parameters, has no id': function(t) {
 		var user = this.User.new();
 		user.should.not.have.property('id');
 		t.done();
 	}
-, 'when invoked with a string, has an id of the passed value': function(t) {
+, 'invoked with a string, has an id of the passed value': function(t) {
 		var randomId = Math.random().toString()
 			,	user = this.User.new(randomId)
 			;
@@ -33,7 +33,7 @@ exports['entity has new function'] = {
 		user.should.have.property('id', randomId);
 		t.done();
 	}
-,	'when invoked with an object, mixins the object\'s non-functional properties': function(t) {
+,	'invoked with an object, gets the object\'s non-function props': function(t) {
 		var proto = {
 					name: 'bob'
 				, age: 34
@@ -52,7 +52,7 @@ exports['entity has new function'] = {
 		});
 		t.done();
 	}
-, 'when invoked with a string and object, makes an id and does the mixin': function(t) {
+, 'invoked with a string and object, makes an id and mixins': function(t) {
 		var proto = {
 					name: 'mary'
 				, age: 26
@@ -74,7 +74,7 @@ exports['entity has new function'] = {
 		});
 		t.done();
 	}
-, 'when invoked with a string and object that contains an id, ignores the id in the proto': function(t) {
+, 'invoked with a string and object with id, ignores object id': function(t) {
 		var proto = {
 					name: 'mary'
 				, age: 26
