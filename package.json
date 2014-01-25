@@ -5,6 +5,7 @@
   "main": "./lib/stork.js",
   "scripts": {
     "test": "./node_modules/nodeunit/bin/nodeunit test"
+  , "autotest": "./node_modules/autotest/autotest.js --npm"
   },
   "keywords": [
     "couchdb",
