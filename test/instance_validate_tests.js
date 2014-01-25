@@ -31,7 +31,9 @@ exports['instance has #validate'] = {
 				required: true
 			}
 		}
+
 		validation = user.validate();
+
 		validation.should.have.property('valid');
 		validation.should.have.property('errors');
 		validation.valid.should.be.false;
@@ -43,6 +45,25 @@ exports['instance has #validate'] = {
 		error.expected.should.be.true;
 		(typeof error.actual).should.be.equal('undefined');
 		error.message.should.be.equal('is required');
+		t.done();
+	}
+, 'and schema compliance returns valid': function(t) {
+		var user = this.User.new({name: 'Curtis'})
+		  , validation
+		  , error
+		  ;
+		user['$schema'].properties = {
+			name: {
+				type: 'string',
+				required: true
+			}
+		}
+
+		validation = user.validate();
+
+		validation.should.have.property('valid');
+		validation.should.not.have.property('errors');
+		validation.valid.should.be.true;
 		t.done();
 	}
 };
