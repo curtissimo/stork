@@ -144,32 +144,156 @@ exports['array property builder'] = {
 		t.done();
 	}
 
-, 'works with instances': function(t) {
-		var options = {
-		      nullable: true
-			  , minimum: 123
-				, exclusiveMaximum: 126
-				, divisibleBy: 2	
-				}
-		  , Vehicle = odm.deliver('vehicle', function() {
-					this.number('weight', options);
+, 'can specify minimum number of items': function(t) {
+		var minimum = Math.ceil(Math.random() * 100)
+		  , Discussion = odm.deliver('discussion', function() {
+					this.array('tags', {minItems: minimum});
 				})
-		  , vehicle = Vehicle.new()
-		  , weights = [null
-		  	, 122
-		  	, 123
-		  	, 124
-		  	, 125
-		  	, 126
-		  	]
-		  , results = [true, false, false, true, false, false]
+		  , discussion = Discussion.new()
+		  , properties = discussion['$schema'].properties
 		  ;
 
-		vehicle.validate().valid.should.be.true;
+		properties.should.have.property('tags');
+		properties.tags.should.have.property('type', 'array');
+		properties.tags.should.not.have.property('required');
+		properties.tags.should.have.property('minItems', minimum);
+		properties.tags.should.not.have.property('maxItems');
+		properties.tags.should.not.have.property('uniqueItems');
+		t.done();
+	}
 
-		weights.forEach(function(weight, i) {
-			vehicle.weight = weight;
-			vehicle.validate().valid.should.be[results[i]];
+, 'does nothing with non-numeric minimum items': function(t) {
+		var minimum = Math.ceil(Math.random() * 100)
+		  , Discussion = odm.deliver('discussion', function() {
+					this.array('tags', {minItems: minimum.toString()});
+				})
+		  , discussion = Discussion.new()
+		  , properties = discussion['$schema'].properties
+		  ;
+
+		properties.should.have.property('tags');
+		properties.tags.should.have.property('type', 'array');
+		properties.tags.should.not.have.property('required');
+		properties.tags.should.not.have.property('minItems');
+		properties.tags.should.not.have.property('maxItems');
+		properties.tags.should.not.have.property('uniqueItems');
+		t.done();
+	}
+
+, 'can specify maximum number of items': function(t) {
+		var maximum = Math.ceil(Math.random() * 100)
+		  , Discussion = odm.deliver('discussion', function() {
+					this.array('tags', {maxItems: maximum});
+				})
+		  , discussion = Discussion.new()
+		  , properties = discussion['$schema'].properties
+		  ;
+
+		properties.should.have.property('tags');
+		properties.tags.should.have.property('type', 'array');
+		properties.tags.should.not.have.property('required');
+		properties.tags.should.not.have.property('minItems');
+		properties.tags.should.have.property('maxItems', maximum);
+		properties.tags.should.not.have.property('uniqueItems');
+		t.done();
+	}
+
+, 'does nothing with non-numeric maximum items': function(t) {
+		var maximum = Math.ceil(Math.random() * 100)
+		  , Discussion = odm.deliver('discussion', function() {
+					this.array('tags', {maxItems: maximum.toString()});
+				})
+		  , discussion = Discussion.new()
+		  , properties = discussion['$schema'].properties
+		  ;
+
+		properties.should.have.property('tags');
+		properties.tags.should.have.property('type', 'array');
+		properties.tags.should.not.have.property('required');
+		properties.tags.should.not.have.property('minItems');
+		properties.tags.should.not.have.property('maxItems');
+		properties.tags.should.not.have.property('uniqueItems');
+		t.done();
+	}
+
+, 'can make a set': function(t) {
+		var Discussion = odm.deliver('discussion', function() {
+					this.array('tags', {uniqueItems: true});
+				})
+		  , discussion = Discussion.new()
+		  , properties = discussion['$schema'].properties
+		  ;
+
+		properties.should.have.property('tags');
+		properties.tags.should.have.property('type', 'array');
+		properties.tags.should.not.have.property('required');
+		properties.tags.should.not.have.property('minItems');
+		properties.tags.should.not.have.property('maxItems');
+		properties.tags.should.have.property('uniqueItems', true);
+		t.done();
+	}
+
+, 'can make an explicitly listy property': function(t) {
+		var Discussion = odm.deliver('discussion', function() {
+					this.array('tags', {uniqueItems: false});
+				})
+		  , discussion = Discussion.new()
+		  , properties = discussion['$schema'].properties
+		  ;
+
+		properties.should.have.property('tags');
+		properties.tags.should.have.property('type', 'array');
+		properties.tags.should.not.have.property('required');
+		properties.tags.should.not.have.property('minItems');
+		properties.tags.should.not.have.property('maxItems');
+		properties.tags.should.have.property('uniqueItems', false);
+		t.done();
+	}
+
+, 'does nothing with non-boolean uniqueItems config': function(t) {
+		var Discussion = odm.deliver('discussion', function() {
+					this.array('tags', {uniqueItems: 'sherbet is a rat'});
+				})
+		  , discussion = Discussion.new()
+		  , properties = discussion['$schema'].properties
+		  ;
+
+		properties.should.have.property('tags');
+		properties.tags.should.have.property('type', 'array');
+		properties.tags.should.not.have.property('required');
+		properties.tags.should.not.have.property('minItems');
+		properties.tags.should.not.have.property('maxItems');
+		properties.tags.should.not.have.property('uniqueItems');
+		t.done();
+	}
+
+, 'works with instances': function(t) {
+		var options = {
+			    required: true
+			  , minItems: 5
+			  , maxItems: 8
+			  , uniqueItems: true
+				}
+		  , Discussion = odm.deliver('discussion', function() {
+					this.array('tags', options);
+				})
+		  , discussion = Discussion.new()
+		  , tagses = [
+		  	  null
+		  	, [1, 2, 3, 4]
+		  	, [1, 2, 3, 4, 5]
+		  	, [1, 2, 3, 4, 5, 6, 7, 8]
+		  	, [1, 2, 3, 4, 5, 6, 7, 8, 9]
+		  	, [1, 2, 3, 1, 2, 3]
+		  	]
+		  , results = [false, false, true, true, false, false]
+		  ;
+
+		discussion.validate().valid.should.be.false;
+
+		tagses.forEach(function(tags, i) {
+			discussion.tags = tags;
+			discussion.validate().valid.should.be[results[i]];
 		});
 		t.done();
 	}
