@@ -25,6 +25,17 @@ exports['entity has #new'] = {
     t.done();
   }
 
+, 'returns instance with unchangeable "kind"': function(t) {
+    var user = this.User.new()
+      , setter = function() {'use strict'; user.kind = "something else";}
+      ;
+    setter.should.throw();
+
+    user.kind = "something else";
+    user.kind.should.equal(this.expectedKind);
+    t.done();
+  }
+
 , 'invoked with no parameters, has no _id': function(t) {
     var user = this.User.new();
     user.should.not.have.property('_id');
