@@ -215,10 +215,10 @@ exports['datetime property builder'] = {
         , maximum: new Date(2012, 12, 31)
         }
       , Vehicle = odm.deliver('vehicle', function() {
-          this.datetime('createdOn', options);
+          this.datetime('manufacturerDate', options);
         })
       , vehicle = Vehicle.new()
-      , creations = [
+      , dates = [
           null
         , new Date(2011, 12, 31)
         , new Date(2012, 1, 1)
@@ -231,13 +231,13 @@ exports['datetime property builder'] = {
 
     vehicle.validate().valid.should.be.false;
 
-    creations.forEach(function(createdOn, i) {
-      vehicle.createdOn = createdOn;
+    dates.forEach(function(date, i) {
+      vehicle.manufacturerDate = date;
       vehicle.validate().valid.should.be[results[i]];
-      if(!vehicle.createdOn) {
+      if(!vehicle.manufacturerDate) {
         return;
       }
-      vehicle.createdOn.should.be.equal(createdOn);
+      vehicle.manufacturerDate.should.be.equal(date);
     });
     t.done();
   }
