@@ -1,6 +1,6 @@
 {
   "name": "stork",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Stork provides a layer of document management over the CouchDB.",
   "main": "./lib/stork.js",
   "scripts": {
