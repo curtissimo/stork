@@ -1,11 +1,4 @@
-<a href="https://travis-ci.org/realistschuckle/stork">
-<img src="https://travis-ci.org/realistschuckle/stork.png?branch=master" align="right" alt="Build Status">
-</a>
-<a href="https://travis-ci.org/realistschuckle/stork">
-<img src="https://travis-ci.org/realistschuckle/stork.png?branch=develop" align="right" alt="Build Status">
-</a>
-
-stork
+stork [![Build Status](https://travis-ci.org/realistschuckle/stork.png)](https://travis-ci.org/realistschuckle/stork)
 =====
 
 __NOTE:__ _We will end up moving this repository to another account and renaming
