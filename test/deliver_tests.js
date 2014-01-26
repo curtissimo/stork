@@ -26,7 +26,7 @@ exports['test deliver fails with non-function second argument'] = function(t) {
 };
 
 exports['test deliver returns an object'] = function(t) {
-	var Thing = odm.deliver('thing');
+	var Thing = odm.deliver('thing', function() {});
 
 	Thing.should.be.ok;
 

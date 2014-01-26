@@ -24,6 +24,7 @@ exports['string property builder'] = {
 		});
 		t.done();
 	}
+
 , 'generates an instance in the schema': function(t) {
 		var Discussion = odm.deliver('discussion', function() {
 					this.string('title');
@@ -34,13 +35,14 @@ exports['string property builder'] = {
 
 		properties.should.have.property('title');
 		properties.title.should.have.property('type', 'string');
-		properties.title.should.not.have.property('required');
-		properties.title.should.not.have.property('format');
-		properties.title.should.not.have.property('minLength');
-		properties.title.should.not.have.property('maxLength');
+
+		properties.title.should.not.have.properties([
+			'required', 'format', 'minLength', 'maxLength', 'pattern'
+		]);
 		t.done();
 	}
-, 'can be made required': function(t) {
+
+, 'can make a required property': function(t) {
 		var Discussion = odm.deliver('discussion', function() {
 					this.string('title', {required: true});
 				})
@@ -51,12 +53,13 @@ exports['string property builder'] = {
 		properties.should.have.property('title');
 		properties.title.should.have.property('type', 'string');
 		properties.title.should.have.property('required', true);
-		properties.title.should.not.have.property('format');
-		properties.title.should.not.have.property('minLength');
-		properties.title.should.not.have.property('maxLength');
+		properties.title.should.not.have.properties([
+			'format', 'minLength', 'maxLength', 'pattern'
+		]);
 		t.done();
 	}
-, 'can be made non-required': function(t) {
+
+, 'can make an explicityly optional property': function(t) {
 		var Discussion = odm.deliver('discussion', function() {
 					this.string('title', {required: false});
 				})
@@ -67,12 +70,29 @@ exports['string property builder'] = {
 		properties.should.have.property('title');
 		properties.title.should.have.property('type', 'string');
 		properties.title.should.have.property('required', false);
-		properties.title.should.not.have.property('format');
-		properties.title.should.not.have.property('minLength');
-		properties.title.should.not.have.property('maxLength');
+		properties.title.should.not.have.properties([
+			'format', 'minLength', 'maxLength', 'pattern'
+		]);
 		t.done();
 	}
-, 'can be made nullable': function(t) {
+
+, 'does nothing with non-boolean required config': function(t) {
+		var Discussion = odm.deliver('discussion', function() {
+					this.string('title', {required: 'sherbet is a rat'});
+				})
+		  , discussion = Discussion.new()
+		  , properties = discussion['$schema'].properties
+		  ;
+
+		properties.should.have.property('title');
+		properties.title.should.have.property('type', 'string');
+		properties.title.should.not.have.properties([
+			'required', 'format', 'minLength', 'maxLength', 'pattern'
+		]);
+		t.done();
+	}
+
+, 'can make a nullable property': function(t) {
 		var Discussion = odm.deliver('discussion', function() {
 					this.string('title', {nullable: true});
 				})
@@ -85,13 +105,13 @@ exports['string property builder'] = {
 		properties.title.type.should.be.Array;
 		properties.title.type.should.containEql('string');
 		properties.title.type.should.containEql('null');
-		properties.title.should.not.have.property('required');
-		properties.title.should.not.have.property('format');
-		properties.title.should.not.have.property('minLength');
-		properties.title.should.not.have.property('maxLength');
+		properties.title.should.not.have.properties([
+			'required', 'format', 'minLength', 'maxLength', 'pattern'
+		]);
 		t.done();
 	}
-, 'can be made explicitly not nullable': function(t) {
+
+, 'can make an explicitly non-nullable property': function(t) {
 		var Discussion = odm.deliver('discussion', function() {
 					this.string('title', {nullable: false});
 				})
@@ -102,11 +122,28 @@ exports['string property builder'] = {
 		properties.should.have.property('title');
 		properties.title.should.have.property('type', 'string');
 		properties.title.should.not.have.property('required');
-		properties.title.should.not.have.property('format');
-		properties.title.should.not.have.property('minLength');
-		properties.title.should.not.have.property('maxLength');
+		properties.title.should.not.have.properties([
+			'required', 'format', 'minLength', 'maxLength', 'pattern'
+		]);
 		t.done();
 	}
+
+, 'does nothing with non-boolean nullable config': function(t) {
+		var Discussion = odm.deliver('discussion', function() {
+					this.string('title', {nullable: 'sherbet is a rat'});
+				})
+		  , discussion = Discussion.new()
+		  , properties = discussion['$schema'].properties
+		  ;
+
+		properties.should.have.property('title');
+		properties.title.should.have.property('type', 'string');
+		properties.title.should.not.have.properties([
+			'required', 'format', 'minLength', 'maxLength', 'pattern'
+		]);
+		t.done();
+	}
+
 , 'can specify minimum length': function(t) {
 		var Discussion = odm.deliver('discussion', function() {
 					this.string('title', {minLength: 5});
@@ -117,13 +154,30 @@ exports['string property builder'] = {
 
 		properties.should.have.property('title');
 		properties.title.should.have.property('type', 'string');
-		properties.title.should.not.have.property('required');
-		properties.title.should.not.have.property('format');
 		properties.title.should.have.property('minLength', 5);
-		properties.title.should.not.have.property('maxLength');
+		properties.title.should.not.have.properties([
+			'required', 'format', 'maxLength', 'pattern'
+		]);
 		t.done();
 	}
-, 'can specify maximum length length': function(t) {
+
+, 'ignore non-numerical minimum length': function(t) {
+		var Discussion = odm.deliver('discussion', function() {
+					this.string('title', {minLength: 'sherbet is a rat'});
+				})
+		  , discussion = Discussion.new()
+		  , properties = discussion['$schema'].properties
+		  ;
+
+		properties.should.have.property('title');
+		properties.title.should.have.property('type', 'string');
+		properties.title.should.not.have.properties([
+			'required', 'format', 'minLength', 'maxLength', 'pattern'
+		]);
+		t.done();
+	}
+
+, 'can specify maximum length': function(t) {
 		var Discussion = odm.deliver('discussion', function() {
 					this.string('title', {maxLength: 25});
 				})
@@ -133,12 +187,29 @@ exports['string property builder'] = {
 
 		properties.should.have.property('title');
 		properties.title.should.have.property('type', 'string');
-		properties.title.should.not.have.property('required');
-		properties.title.should.not.have.property('format');
-		properties.title.should.not.have.property('minLength');
 		properties.title.should.have.property('maxLength', 25);
+		properties.title.should.not.have.properties([
+			'required', 'format', 'minLength', 'pattern'
+		]);
 		t.done();
 	}
+
+, 'ignore non-numerical maximum length': function(t) {
+		var Discussion = odm.deliver('discussion', function() {
+					this.string('title', {maxLength: 'sherbet is a rat'});
+				})
+		  , discussion = Discussion.new()
+		  , properties = discussion['$schema'].properties
+		  ;
+
+		properties.should.have.property('title');
+		properties.title.should.have.property('type', 'string');
+		properties.title.should.not.have.properties([
+			'required', 'format', 'minLength', 'maxLength', 'pattern'
+		]);
+		t.done();
+	}
+
 , 'can specify format': function(t) {
 		var goodFormats = [
 					'url', 'email', 'ip-address', 'ipv6', 'date-time', 'date', 'time'
@@ -159,12 +230,11 @@ exports['string property builder'] = {
 			  ;
 			properties.should.have.property('title');
 			properties.title.should.have.property('type', 'string');
-			properties.title.should.not.have.property('required');
-			properties.title.should.not.have.property('format');
-			properties.title.should.not.have.property('minLength');
-			properties.title.should.not.have.property('maxLength');
 			properties.title.should.have.property('pattern');
 			properties.title.pattern.toString().should.equal(/abc/.toString());
+			properties.title.should.not.have.properties([
+				'required', 'format', 'minLength', 'maxLength'
+			]);
 		});
 
 		goodFormats.forEach(function(format) {
@@ -176,10 +246,10 @@ exports['string property builder'] = {
 			  ;
 			properties.should.have.property('title');
 			properties.title.should.have.property('type', 'string');
-			properties.title.should.not.have.property('required');
 			properties.title.should.have.property('format', format);
-			properties.title.should.not.have.property('minLength');
-			properties.title.should.not.have.property('maxLength');
+			properties.title.should.not.have.properties([
+				'required', 'minLength', 'maxLength', 'pattern'
+			]);
 		});
 
 		badFormats.forEach(function(format) {
@@ -191,13 +261,13 @@ exports['string property builder'] = {
 			  ;
 			properties.should.have.property('title');
 			properties.title.should.have.property('type', 'string');
-			properties.title.should.not.have.property('required');
-			properties.title.should.not.have.property('format');
-			properties.title.should.not.have.property('minLength');
-			properties.title.should.not.have.property('maxLength');
+			properties.title.should.not.have.properties([
+				'required', 'format', 'minLength', 'maxLength', 'pattern'
+			]);
 		});
 		t.done();
 	}
+
 , 'works with instances': function(t) {
 		var options = {
 					nullable: true
