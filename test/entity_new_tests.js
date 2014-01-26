@@ -11,20 +11,24 @@ exports['entity has #new'] = {
 		this.User = odm.deliver(this.expectedKind);
 		cb();
 	}
+
 ,	'invokable with no parameters': function(t) {
 		this.User.new.should.not.throw();
 		t.done();
 	}
+
 , 'returns instance with appropriate "kind"': function(t) {
 		var user = this.User.new();
 		user.should.have.property('kind', this.expectedKind);
 		t.done();
 	}
+
 , 'invoked with no parameters, has no _id': function(t) {
 		var user = this.User.new();
 		user.should.not.have.property('_id');
 		t.done();
 	}
+
 , 'invoked with a string, has an _id of the passed value': function(t) {
 		var randomId = Math.random().toString()
 			,	user = this.User.new(randomId)
@@ -33,6 +37,7 @@ exports['entity has #new'] = {
 		user.should.have.property('_id', randomId);
 		t.done();
 	}
+
 ,	'invoked with an object, gets the object\'s non-function props': function(t) {
 		var proto = {
 					name: 'bob'
@@ -53,6 +58,7 @@ exports['entity has #new'] = {
 		});
 		t.done();
 	}
+
 , 'invoked with a string and object, makes an _id and mixins': function(t) {
 		var proto = {
 					name: 'mary'
@@ -75,7 +81,8 @@ exports['entity has #new'] = {
 		});
 		t.done();
 	}
-, 'invoked with a string and object with _id, ignores object _id': function(t) {
+
+, 'invoked with a string and object#_id, ignores object _id': function(t) {
 		var proto = {
 					name: 'mary'
 				, age: 26

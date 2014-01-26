@@ -35,9 +35,9 @@ exports['datetime property builder'] = {
 
 		properties.should.have.property('createdOn');
 		properties.createdOn.should.have.property('type', 'number');
-		properties.createdOn.should.not.have.property('required');
-		properties.createdOn.should.not.have.property('minimum');
-		properties.createdOn.should.not.have.property('maximum');
+		properties.createdOn.should.not.have.properties([
+			'required', 'minimum', 'maximum'
+		]);
 		t.done();
 	}
 
@@ -52,8 +52,9 @@ exports['datetime property builder'] = {
 		properties.should.have.property('createdOn');
 		properties.createdOn.should.have.property('type', 'number');
 		properties.createdOn.should.have.property('required', true);
-		properties.createdOn.should.not.have.property('minimum');
-		properties.createdOn.should.not.have.property('maximum');
+		properties.createdOn.should.not.have.properties([
+			'minimum', 'maximum'
+		]);
 		t.done();
 	}
 
@@ -68,8 +69,9 @@ exports['datetime property builder'] = {
 		properties.should.have.property('createdOn');
 		properties.createdOn.should.have.property('type', 'number');
 		properties.createdOn.should.have.property('required', false);
-		properties.createdOn.should.not.have.property('minimum');
-		properties.createdOn.should.not.have.property('maximum');
+		properties.createdOn.should.not.have.properties([
+			'minimum', 'maximum'
+		]);
 		t.done();
 	}
 
@@ -83,9 +85,9 @@ exports['datetime property builder'] = {
 
 		properties.should.have.property('createdOn');
 		properties.createdOn.should.have.property('type', 'number');
-		properties.createdOn.should.not.have.property('required');
-		properties.createdOn.should.not.have.property('minimum');
-		properties.createdOn.should.not.have.property('maximum');
+		properties.createdOn.should.not.have.properties([
+			'required', 'minimum', 'maximum'
+		]);
 		t.done();
 	}
 
@@ -99,9 +101,9 @@ exports['datetime property builder'] = {
 
 		properties.should.have.property('createdOn');
 		properties.createdOn.should.have.property('type', ['number', 'null']);
-		properties.createdOn.should.not.have.property('required');
-		properties.createdOn.should.not.have.property('minimum');
-		properties.createdOn.should.not.have.property('maximum');
+		properties.createdOn.should.not.have.properties([
+			'required', 'minimum', 'maximum'
+		]);
 		t.done();
 	}
 
@@ -115,9 +117,9 @@ exports['datetime property builder'] = {
 
 		properties.should.have.property('createdOn');
 		properties.createdOn.should.have.property('type', 'number');
-		properties.createdOn.should.not.have.property('required');
-		properties.createdOn.should.not.have.property('minimum');
-		properties.createdOn.should.not.have.property('maximum');
+		properties.createdOn.should.not.have.properties([
+			'required', 'minimum', 'maximum'
+		]);
 		t.done();
 	}
 
@@ -131,9 +133,9 @@ exports['datetime property builder'] = {
 
 		properties.should.have.property('createdOn');
 		properties.createdOn.should.have.property('type', 'number');
-		properties.createdOn.should.not.have.property('required');
-		properties.createdOn.should.not.have.property('minimum');
-		properties.createdOn.should.not.have.property('maximum');
+		properties.createdOn.should.not.have.properties([
+			'required', 'minimum', 'maximum'
+		]);
 		t.done();
 	}
 
@@ -148,9 +150,10 @@ exports['datetime property builder'] = {
 
 		properties.should.have.property('createdOn');
 		properties.createdOn.should.have.property('type', 'number');
-		properties.createdOn.should.not.have.property('required');
 		properties.createdOn.should.have.property('minimum', now.valueOf());
-		properties.createdOn.should.not.have.property('maximum');
+		properties.createdOn.should.not.have.properties([
+			'required', 'maximum'
+		]);
 		t.done();
 	}
 
@@ -164,9 +167,9 @@ exports['datetime property builder'] = {
 
 		properties.should.have.property('createdOn');
 		properties.createdOn.should.have.property('type', 'number');
-		properties.createdOn.should.not.have.property('required');
-		properties.createdOn.should.not.have.property('minimum');
-		properties.createdOn.should.not.have.property('maximum');
+		properties.createdOn.should.not.have.properties([
+			'required', 'minimum', 'maximum'
+		]);
 		t.done();
 	}
 
@@ -181,9 +184,10 @@ exports['datetime property builder'] = {
 
 		properties.should.have.property('createdOn');
 		properties.createdOn.should.have.property('type', 'number');
-		properties.createdOn.should.not.have.property('required');
-		properties.createdOn.should.not.have.property('minimum');
 		properties.createdOn.should.have.property('maximum', now.valueOf());
+		properties.createdOn.should.not.have.properties([
+			'required', 'minimum'
+		]);
 		t.done();
 	}
 
@@ -197,9 +201,9 @@ exports['datetime property builder'] = {
 
 		properties.should.have.property('createdOn');
 		properties.createdOn.should.have.property('type', 'number');
-		properties.createdOn.should.not.have.property('required');
-		properties.createdOn.should.not.have.property('minimum');
-		properties.createdOn.should.not.have.property('maximum');
+		properties.createdOn.should.not.have.properties([
+			'required', 'minimum', 'maximum'
+		]);
 		t.done();
 	}
 

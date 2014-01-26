@@ -11,6 +11,7 @@ exports['instance has #validate'] = {
 		this.User = odm.deliver(this.expectedKind);
 		cb();
 	}
+
 , 'and returns structure with valid property': function(t) {
 		var user = this.User.new();
 		user.should.have.property('validate');
@@ -20,6 +21,7 @@ exports['instance has #validate'] = {
 		user.validate().should.not.have.property('errors');
 		t.done();
 	}
+
 , 'and schema violations return invalid': function(t) {
 		var user = this.User.new()
 		  , validation
@@ -47,6 +49,7 @@ exports['instance has #validate'] = {
 		error.message.should.be.equal('is required');
 		t.done();
 	}
+
 , 'and schema compliance returns valid': function(t) {
 		var user = this.User.new({name: 'Curtis'})
 		  , validation

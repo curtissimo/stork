@@ -35,10 +35,9 @@ exports['array property builder'] = {
 
 		properties.should.have.property('tags');
 		properties.tags.should.have.property('type', 'array');
-		properties.tags.should.not.have.property('required');
-		properties.tags.should.not.have.property('minItems');
-		properties.tags.should.not.have.property('maxItems');
-		properties.tags.should.not.have.property('uniqueItems');
+		properties.tags.should.not.have.properties([
+			'required', 'minItems', 'maxItems', 'uniqueItems'
+		]);
 		t.done();
 	}
 
@@ -53,9 +52,9 @@ exports['array property builder'] = {
 		properties.should.have.property('tags');
 		properties.tags.should.have.property('type', 'array');
 		properties.tags.should.have.property('required', true);
-		properties.tags.should.not.have.property('minItems');
-		properties.tags.should.not.have.property('maxItems');
-		properties.tags.should.not.have.property('uniqueItems');
+		properties.tags.should.not.have.properties([
+			'minItems', 'maxItems', 'uniqueItems'
+		]);
 		t.done();
 	}
 
@@ -70,9 +69,9 @@ exports['array property builder'] = {
 		properties.should.have.property('tags');
 		properties.tags.should.have.property('type', 'array');
 		properties.tags.should.have.property('required', false);
-		properties.tags.should.not.have.property('minItems');
-		properties.tags.should.not.have.property('maxItems');
-		properties.tags.should.not.have.property('uniqueItems');
+		properties.tags.should.not.have.properties([
+			'minItems', 'maxItems', 'uniqueItems'
+		]);
 		t.done();
 	}
 
@@ -86,10 +85,9 @@ exports['array property builder'] = {
 
 		properties.should.have.property('tags');
 		properties.tags.should.have.property('type', 'array');
-		properties.tags.should.not.have.property('required');
-		properties.tags.should.not.have.property('minItems');
-		properties.tags.should.not.have.property('maxItems');
-		properties.tags.should.not.have.property('uniqueItems');
+		properties.tags.should.not.have.properties([
+			'required', 'minItems', 'maxItems', 'uniqueItems'
+		]);
 		t.done();
 	}
 
@@ -103,10 +101,9 @@ exports['array property builder'] = {
 
 		properties.should.have.property('tags');
 		properties.tags.should.have.property('type', ['array', 'null']);
-		properties.tags.should.not.have.property('required');
-		properties.tags.should.not.have.property('minItems');
-		properties.tags.should.not.have.property('maxItems');
-		properties.tags.should.not.have.property('uniqueItems');
+		properties.tags.should.not.have.properties([
+			'required', 'minItems', 'maxItems', 'uniqueItems'
+		]);
 		t.done();
 	}
 
@@ -120,10 +117,9 @@ exports['array property builder'] = {
 
 		properties.should.have.property('tags');
 		properties.tags.should.have.property('type', 'array');
-		properties.tags.should.not.have.property('required');
-		properties.tags.should.not.have.property('minItems');
-		properties.tags.should.not.have.property('maxItems');
-		properties.tags.should.not.have.property('uniqueItems');
+		properties.tags.should.not.have.properties([
+			'required', 'minItems', 'maxItems', 'uniqueItems'
+		]);
 		t.done();
 	}
 
@@ -137,10 +133,9 @@ exports['array property builder'] = {
 
 		properties.should.have.property('tags');
 		properties.tags.should.have.property('type', 'array');
-		properties.tags.should.not.have.property('required');
-		properties.tags.should.not.have.property('minItems');
-		properties.tags.should.not.have.property('maxItems');
-		properties.tags.should.not.have.property('uniqueItems');
+		properties.tags.should.not.have.properties([
+			'required', 'minItems', 'maxItems', 'uniqueItems'
+		]);
 		t.done();
 	}
 
@@ -155,10 +150,10 @@ exports['array property builder'] = {
 
 		properties.should.have.property('tags');
 		properties.tags.should.have.property('type', 'array');
-		properties.tags.should.not.have.property('required');
 		properties.tags.should.have.property('minItems', minimum);
-		properties.tags.should.not.have.property('maxItems');
-		properties.tags.should.not.have.property('uniqueItems');
+		properties.tags.should.not.have.properties([
+			'required', 'maxItems', 'uniqueItems'
+		]);
 		t.done();
 	}
 
@@ -173,10 +168,9 @@ exports['array property builder'] = {
 
 		properties.should.have.property('tags');
 		properties.tags.should.have.property('type', 'array');
-		properties.tags.should.not.have.property('required');
-		properties.tags.should.not.have.property('minItems');
-		properties.tags.should.not.have.property('maxItems');
-		properties.tags.should.not.have.property('uniqueItems');
+		properties.tags.should.not.have.properties([
+			'required', 'minItems', 'maxItems', 'uniqueItems'
+		]);
 		t.done();
 	}
 
@@ -191,10 +185,10 @@ exports['array property builder'] = {
 
 		properties.should.have.property('tags');
 		properties.tags.should.have.property('type', 'array');
-		properties.tags.should.not.have.property('required');
-		properties.tags.should.not.have.property('minItems');
 		properties.tags.should.have.property('maxItems', maximum);
-		properties.tags.should.not.have.property('uniqueItems');
+		properties.tags.should.not.have.properties([
+			'required', 'minItems', 'uniqueItems'
+		]);
 		t.done();
 	}
 
@@ -209,10 +203,9 @@ exports['array property builder'] = {
 
 		properties.should.have.property('tags');
 		properties.tags.should.have.property('type', 'array');
-		properties.tags.should.not.have.property('required');
-		properties.tags.should.not.have.property('minItems');
-		properties.tags.should.not.have.property('maxItems');
-		properties.tags.should.not.have.property('uniqueItems');
+		properties.tags.should.not.have.properties([
+			'required', 'minItems', 'maxItems', 'uniqueItems'
+		]);
 		t.done();
 	}
 
@@ -226,10 +219,10 @@ exports['array property builder'] = {
 
 		properties.should.have.property('tags');
 		properties.tags.should.have.property('type', 'array');
-		properties.tags.should.not.have.property('required');
-		properties.tags.should.not.have.property('minItems');
-		properties.tags.should.not.have.property('maxItems');
 		properties.tags.should.have.property('uniqueItems', true);
+		properties.tags.should.not.have.properties([
+			'required', 'minItems', 'maxItems'
+		]);
 		t.done();
 	}
 
@@ -243,10 +236,10 @@ exports['array property builder'] = {
 
 		properties.should.have.property('tags');
 		properties.tags.should.have.property('type', 'array');
-		properties.tags.should.not.have.property('required');
-		properties.tags.should.not.have.property('minItems');
-		properties.tags.should.not.have.property('maxItems');
 		properties.tags.should.have.property('uniqueItems', false);
+		properties.tags.should.not.have.properties([
+			'required', 'minItems', 'maxItems'
+		]);
 		t.done();
 	}
 
@@ -260,10 +253,9 @@ exports['array property builder'] = {
 
 		properties.should.have.property('tags');
 		properties.tags.should.have.property('type', 'array');
-		properties.tags.should.not.have.property('required');
-		properties.tags.should.not.have.property('minItems');
-		properties.tags.should.not.have.property('maxItems');
-		properties.tags.should.not.have.property('uniqueItems');
+		properties.tags.should.not.have.properties([
+			'required', 'minItems', 'maxItems', 'uniqueItems'
+		]);
 		t.done();
 	}
 
