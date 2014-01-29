@@ -31,8 +31,9 @@ module.exports = integration({
       });
     });
   }
+
 , 'create default entity design document': function(t) {
-    var entityName = 'marlin'
+    var entityName = 'defaulty'
       , entity = odm.deliver(entityName)
       ;
 
@@ -48,6 +49,32 @@ module.exports = integration({
         doc.should.have.property('views');
         doc.views.should.have.property('all');
         doc.views.all.should.have.property('map');
+        doc.views.all.map.indexOf('emit(doc._id').should.be.greaterThan(-1);
+        t.done();
+      });
+    });
+  }
+
+, 'create entity design document with sort': function(t) {
+    var entityName = 'sorty'
+      , entity = odm.deliver(entityName, function() {
+          this.sort('o/n\\e', 'two');
+        })
+      ;
+
+    entity.to(dburl).sync(function(e) {
+      if(e) {
+        return t.done(e);
+      }
+      db.get('_design/' + entityName, function(e, doc) {
+        if(e) {
+          return t.done(e);
+        }
+        doc.should.be.ok;
+        doc.should.have.property('views');
+        doc.views.should.have.property('all');
+        doc.views.all.should.have.property('map');
+        doc.views.all.map.indexOf("emit([doc['o/n\\\\e'],doc['two']]").should.be.greaterThan(-1);
         t.done();
       });
     });
