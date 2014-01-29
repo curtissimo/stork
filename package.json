@@ -4,8 +4,8 @@
   "description": "Stork provides a layer of document management over the CouchDB.",
   "main": "./lib/stork.js",
   "scripts": {
-    "test": "./node_modules/nodeunit/bin/nodeunit test --reporter minimal"
-  , "autotest": "./node_modules/autotest/autotest.js --npm"
+    "test": "./node_modules/nodeunit/bin/nodeunit test --reporter minimal",
+    "autotest": "SKIP_STORK_DB_TESTS=1 ./node_modules/autotest/autotest.js --npm"
   },
   "keywords": [
     "couchdb",
@@ -33,6 +33,8 @@
   },
   "dependencies": {
     "utile": "~0.2.1",
-    "revalidator": "~0.1.6"
+    "revalidator": "~0.1.6",
+    "nano": "~4.4.0",
+    "nodemock": "~0.2.17"
   }
 }
