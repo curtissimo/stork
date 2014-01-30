@@ -79,4 +79,39 @@ module.exports = integration({
       });
     });
   }
+
+, 'save new object': function(t) {
+    var entityName = 'sorty'
+      , entity = odm.deliver(entityName, function() {
+          this.string('s', {required: true});
+          this.datetime('dt', {required: true});
+        })
+      , instance = entity.new({
+          s: 'text'
+        , dt: new Date(2012, 6, 14)
+        , extra: 1
+        })
+      ;
+
+    instance.to(dburl).save(function(e, result) {
+      if(e) {
+        return t.done(e);
+      }
+      result.should.have.property('_id');
+      result.should.have.property('_rev');
+      db.get(result._id, function(e, doc) {
+        if(e) {
+          return t.done(e);
+        }
+        doc.dt = new Date(doc.dt);
+        doc.should.be.ok;
+        doc.should.have.property('_id', result._id);
+        doc.should.have.property('s', result.s);
+        doc.should.have.property('dt', result.dt);
+        doc.should.have.property('extra', result.extra);
+        doc.should.have.property('_rev', result._rev);
+        t.done();
+      });
+    });
+  }
 });

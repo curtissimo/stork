@@ -135,7 +135,7 @@ exports['bool property builder'] = {
     validation.valid.should.be.true;
 
     discussion = Discussion.new();
-    validation = discussion.validate({sticky: 'margarine'});
+    validation = discussion.validate();
     validation.valid.should.be.false;
     validation.errors.should.have.length(1);
     error = validation.errors[0];
