@@ -95,4 +95,20 @@ exports['Entity#to has #sync'] = {
       t.done();
     });
   }
+
+, 'can save an already saved instance': function(t) {
+    var inst = this.instance
+      , mixin1 = {id: 'woot', rev: '1-another'}
+      , mixin2 = {id: 'woot', rev: '2-another'}
+      , db1 = this.mockDb(inst, null, null, mixin1)
+      , db2 = this.mockDb(inst, null, null, mixin2)
+      ;
+
+    inst.to(db1).save(function(e, doc) {
+      inst.to(db2).save(function(e, doc) {
+        doc.should.have.property('_rev', mixin2.rev);
+        t.done();
+      });
+    });
+  }
 };
