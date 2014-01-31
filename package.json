@@ -25,7 +25,11 @@
   "devDependencies": {
     "nodeunit": "~0.8.3",
     "should": "~3.1.0",
-    "autotest": "~0.2.6"
+    "autotest": "~0.2.6",
+    "nodemock": "~0.3.3",
+    "grunt": "~0.4.2",
+    "grunt-jslint": "~1.1.2",
+    "grunt-contrib-nodeunit": "~0.3.0"
   },
   "repository": {
     "type": "git",
@@ -34,7 +38,6 @@
   "dependencies": {
     "utile": "~0.2.1",
     "revalidator": "~0.1.6",
-    "nano": "~4.4.0",
-    "nodemock": "~0.2.17"
+    "nano": "~4.4.0"
   }
 }

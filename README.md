@@ -12,6 +12,8 @@ Inspired by [resourceful](https://github.com/flatiron/resourceful).
 
 ## Developing
 
+0. Make sure you have [grunt-cli](http://gruntjs.com/getting-started)
+   installed.
 1. Clone. You know how. This is GitHub, for goodness' sake.
 2. Install stuff. ``npm install``
 3. Run the autotester. ``SKIP_STORK_DB_TESTS=1 ./node_modules/autotest/autotest.js --npm``
@@ -19,6 +21,7 @@ Inspired by [resourceful](https://github.com/flatiron/resourceful).
 5. Find an [issue](https://github.com/realistschuckle/stork/issues)
 6. Write a test.
 7. Write nice code.
+8. Run `grunt` and make sure you have no errors either in tests or in jslint.
 8. Commit.
 9. Make a PULL REQUEST if you're not already a contributor.
 
