@@ -77,13 +77,26 @@ exports['entity has #from'] = {
 
 , 'that returns an object with a all method': function(t) {
     var Entity = odm.deliver('entity')
-      , protocol = 'http://localhost:5984/stork_test'
+      , dburl = 'http://localhost:5984/stork_test'
       , _ = null
-      , from = Entity.from(protocol)
+      , from = Entity.from(dburl)
       ;
 
     from.should.have.property('all');
     from.all.should.be.a.Function;
+
+    t.done();
+  }
+
+, 'that returns an object with a get method': function(t) {
+    var Entity = odm.deliver('entity')
+      , dburl = 'http://localhost:5984/stork_test'
+      , _ = null
+      , from = Entity.from(dburl)
+      ;
+
+    from.should.have.property('get');
+    from.get.should.be.a.Function;
 
     t.done();
   }
