@@ -1,5 +1,6 @@
 var nano = require('nano')
   , os = require('os')
+  , async = require('async')
   , odm = require('../lib/stork')
   ;
 
@@ -115,6 +116,42 @@ module.exports = integration({
     });
   }
 
+, 'save new object with explicit id': function(t) {
+    var entityName = 'sorty'
+      , entity = odm.deliver(entityName, function() {
+          this.string('s', {required: true});
+          this.datetime('dt', {required: true});
+        })
+      , instance = entity.new({
+          s: 'text'
+        , dt: new Date(2012, 6, 14)
+        , extra: 1
+        , _id: 'hello mary!'
+        })
+      ;
+
+    instance.to(dburl).save(function(e, result) {
+      if(e) {
+        return t.done(e);
+      }
+      result.should.have.property('_id', instance._id);
+      result.should.have.property('_rev');
+      db.get(result._id, function(e, doc) {
+        if(e) {
+          return t.done(e);
+        }
+        doc.dt = new Date(doc.dt);
+        doc.should.be.ok;
+        doc.should.have.property('_id', result._id);
+        doc.should.have.property('s', result.s);
+        doc.should.have.property('dt', result.dt);
+        doc.should.have.property('extra', result.extra);
+        doc.should.have.property('_rev', result._rev);
+        t.done();
+      });
+    });
+  }
+
 , 'save previously saved object': function(t) {
     var entityName = 'sorty'
       , entity = odm.deliver(entityName, function() {
@@ -150,6 +187,40 @@ module.exports = integration({
           t.done();
         });
       });
+    });
+  }
+
+, 'query entity#all': function(t) {
+    var entityName = 'sorty'
+      , Entity = odm.deliver(entityName, function() {
+          this.string('s', {required: true});
+          this.datetime('dt', {required: true});
+        })
+      , instances = [
+          Entity.new({s: 'text', dt: new Date(2012, 6, 14), extra: 1})
+        , Entity.new({s: 'txet', dt: new Date(2013, 9, 21), extra: -1})
+        ]
+      ;
+
+    async.series([
+      function(cb) { Entity.to(dburl).sync(cb); }
+    , function(cb) { instances[0].to(dburl).save(cb); }
+    , function(cb) { instances[1].to(dburl).save(cb); }
+    , function(cb) { Entity.from(dburl).all(cb); }
+    ], function(err, results) {
+      var objs = results[results.length - 1]
+        ;
+      objs.should.be.an.Array;
+      objs.should.have.length(2);
+      objs.forEach(function(obj, i) {
+        Object.keys(obj).forEach(function(key) {
+          if(typeof obj[key] === 'function') {
+            return;
+          }
+          obj[key].should.be.eql(instances[i][key]);
+        });
+      });
+      t.done();
     });
   }
 });

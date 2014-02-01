@@ -30,5 +30,6 @@ exports['test deliver returns an object'] = function(t) {
 
   Thing.should.be.ok;
 
+  t.ok(true);
   t.done();
 };
