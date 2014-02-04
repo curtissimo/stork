@@ -65,7 +65,7 @@ exports['timestamps property builder'] = {
     t.done();
   }
 
-, 'setting instance#createdOn results in error': function(t) {
+, 'setting instance#createdOn results no error': function(t) {
     var Discussion = odm.deliver('discussion', function() {
           this.timestamps();
         })
@@ -73,11 +73,11 @@ exports['timestamps property builder'] = {
       , setter = function() {'use strict'; discussion.createdOn = new Date();}
       ;
 
-    setter.should.throw();
+    setter.should.not.throw();
     t.done();
   }
 
-, 'setting instance#updatedOn results in error': function(t) {
+, 'setting instance#updatedOn results no error': function(t) {
     var Discussion = odm.deliver('discussion', function() {
           this.timestamps();
         })
@@ -85,7 +85,7 @@ exports['timestamps property builder'] = {
       , setter = function() {'use strict'; discussion.updatedOn = new Date();}
       ;
 
-    setter.should.throw();
+    setter.should.not.throw();
     t.done();
   }
 };
