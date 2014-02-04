@@ -111,4 +111,101 @@ exports['instance#to has #sync'] = {
       });
     });
   }
+
+, 'does not create a createdOn if not defined in schema': function(t) {
+    var inst = this.instance
+      , mixin = {id: 'woot', rev: '1-another'}
+      , db = this.mockDb(inst, null, null, mixin)
+      ;
+
+    inst.to(db).save(function(e, doc) {
+      doc.should.not.have.property('createdOn');
+      t.done();
+    });
+  }
+
+, 'does not create an updatedOn if not defined in schema': function(t) {
+    var inst = this.instance
+      , mixin = {id: 'woot', rev: '1-another'}
+      , db = this.mockDb(inst, null, null, mixin)
+      ;
+
+    inst.to(db).save(function(e, doc) {
+      doc.should.not.have.property('updatedOn');
+      t.done();
+    });
+  }
+
+, 'sets createdOn only on first save if defined in schema': function(t) {
+    var inst = odm.deliver('person', function() {
+          this.string('firstName', {required: true});
+          this.string('lastName', {required: true});
+          this.datetime('birthday', {required: true});
+          this.timestamps();
+        }).new({
+          firstName: 'Marco'
+        , lastName: 'Polo'
+        , birthday: new Date(1254, 8, 15)
+        , extra: 123
+        })
+      , mixin1 = {id: 'woot', rev: '1-another'}
+      , mixin2 = {id: 'woot', rev: '2-another'}
+      , db1 = this.mockDb(inst, null, null, mixin1)
+      , db2 = this.mockDb(inst, null, null, mixin2)
+      , before
+      , after
+      , time
+      ;
+
+    inst.should.have.property('createdOn', undefined);
+
+    before = new Date();
+    inst.to(db1).save(function(e, doc) {
+      after = new Date();
+      time = inst.createdOn;
+      time.valueOf().should.be.within(before.valueOf(), after.valueOf());
+      inst.to(db2).save(function(e, doc) {
+        inst.createdOn.should.be.equal(time);
+        doc.should.have.property('_rev', mixin2.rev);
+        t.done();
+      });
+    });
+  }
+
+, 'sets updatedOn on every save if defined in schema': function(t) {
+    var inst = odm.deliver('person', function() {
+          this.string('firstName', {required: true});
+          this.string('lastName', {required: true});
+          this.datetime('birthday', {required: true});
+          this.timestamps();
+        }).new({
+          firstName: 'Marco'
+        , lastName: 'Polo'
+        , birthday: new Date(1254, 8, 15)
+        , extra: 123
+        })
+      , mixin1 = {id: 'woot', rev: '1-another'}
+      , mixin2 = {id: 'woot', rev: '2-another'}
+      , db1 = this.mockDb(inst, null, null, mixin1)
+      , db2 = this.mockDb(inst, null, null, mixin2)
+      , before
+      , after
+      , time
+      ;
+
+    inst.should.have.property('updatedOn', undefined);
+
+    before = new Date();
+    inst.to(db1).save(function(e, doc) {
+      after = new Date();
+      time = inst.updatedOn;
+      time.valueOf().should.be.within(before.valueOf(), after.valueOf());
+      inst.to(db2).save(function(e, doc) {
+        after = new Date();
+        inst.updatedOn.valueOf().should.be.within(time, after.valueOf());
+        doc.should.have.property('_rev', mixin2.rev);
+        t.done();
+      });
+    });
+  }
 };
