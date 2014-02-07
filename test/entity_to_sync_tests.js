@@ -1,5 +1,6 @@
 var should = require('should')
   , mock = require('nodemock')
+  , util = require('utile')
   , odm = require('../lib/stork')
   ;
 
@@ -85,4 +86,34 @@ exports['Entity#to has #sync'] = {
       t.done();
     });
   }
+
+// , 'includes complex-key query as part of the definition': function(t, _) {
+//     var viewName = util.randomString(10)
+//       , customView = {
+//           map: [
+//             "function(doc) {",
+//             "  if(doc.kind === 'entity') {",
+//             "    emit([doc['state'],doc['ssn']], null);",
+//             "  }",
+//             "}"
+//           ].join('\n')
+//         }
+//       , doc = {views: {}}
+//       , db = this.mockDb(doc, null, {})
+//       ;
+
+//     doc.views[viewName] = customView;
+
+//     this.views = function() {
+//       this.string('ssn');
+//       this.string('state');
+//       this.view('byStateAndSsn', {state: _, ssn: _});
+//     };
+
+//     this.entity().to(db).sync(function(err) {
+//       should(err).not.be.ok;
+//       db.assertThrows();
+//       t.done();
+//     });
+//   }
 };

@@ -24,7 +24,7 @@ exports['view builder'] = {
     t.done();
   }
 
-, 'requires an object for a second argument': function(t) {
+, 'requires an array for a second argument': function(t) {
     var Discussion = odm.deliver('discussion', function() {
       this
         .view
@@ -35,11 +35,11 @@ exports['view builder'] = {
     t.done();
   }
 
-, 'requires an object with at least one key for a second argument': function(t) {
+, 'requires an array with at least one entry for a second argument': function(t) {
     var Discussion = odm.deliver('discussion', function() {
       this
         .view
-        .bind(this.view, 'view_name', {})
+        .bind(this.view, 'view_name', [])
         .should
         .throw('view definer requires key definitions');
     });
@@ -49,7 +49,7 @@ exports['view builder'] = {
 , 'creates an entry in the schema views': function(t, _) {
     var viewName = util.randomString(10)
       , Discussion = odm.deliver('discussion', function() {
-          this.view(viewName, {key: _});
+          this.view(viewName, ['key']);
         })
       , discussion = Discussion.new()
       , views = discussion['$schema'].views
@@ -59,18 +59,20 @@ exports['view builder'] = {
     t.done();
   }
 
-, 'entry has a copy of the keys': function(t, _) {
+, 'entry has a copy of the array': function(t, _) {
     var viewName = util.randomString(10)
-      , keys = {key1: _, key2: _}
+      , keys = ['key1', 'key2']
+      , expected = [{key1: undefined}, {key2: undefined}]
       , Discussion = odm.deliver('discussion', function() {
+          this.string('key1');
+          this.string('key2');
           this.view(viewName, keys);
         })
       , discussion = Discussion.new()
       , views = discussion['$schema'].views
       ;
 
-    views[viewName].should.not.equal(keys);
-    views[viewName].should.eql(keys);
+    views[viewName].should.eql(expected);
     t.done();
   }
 };
