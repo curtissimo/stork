@@ -87,33 +87,46 @@ exports['Entity#to has #sync'] = {
     });
   }
 
-// , 'includes complex-key query as part of the definition': function(t, _) {
-//     var viewName = util.randomString(10)
-//       , customView = {
-//           map: [
-//             "function(doc) {",
-//             "  if(doc.kind === 'entity') {",
-//             "    emit([doc['state'],doc['ssn']], null);",
-//             "  }",
-//             "}"
-//           ].join('\n')
-//         }
-//       , doc = {views: {}}
-//       , db = this.mockDb(doc, null, {})
-//       ;
+, 'includes complex-key query as part of the definition': function(t, _) {
+    var viewName = util.randomString(10)
+      , keyName = util.randomString(10)
+      , customView = {
+          map: [
+            "function(doc) {",
+            "  if(doc.kind === 'entity') {",
+            "    emit([doc['" + keyName + "'],doc['ssn']], null);",
+            "  }",
+            "}"
+          ].join('\n')
+        }
+      , doc = {
+          views: {
+            all: {
+              map: [
+                "function(doc) {",
+                "  if(doc.kind === 'entity') {",
+                "    emit(doc._id, null);",
+                "  }",
+                "}"
+              ].join('\n')
+            }
+          }
+        }
+      , db = this.mockDb(doc, null, {})
+      ;
 
-//     doc.views[viewName] = customView;
+    doc.views[viewName] = customView;
 
-//     this.views = function() {
-//       this.string('ssn');
-//       this.string('state');
-//       this.view('byStateAndSsn', {state: _, ssn: _});
-//     };
+    this.views = function() {
+      this.string('ssn');
+      this.string('state');
+      this.view(viewName, [keyName, 'ssn']);
+    };
 
-//     this.entity().to(db).sync(function(err) {
-//       should(err).not.be.ok;
-//       db.assertThrows();
-//       t.done();
-//     });
-//   }
+    this.entity().to(db).sync(function(err) {
+      should(err).not.be.ok;
+      db.assertThrows();
+      t.done();
+    });
+  }
 };
