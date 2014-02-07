@@ -1,6 +1,7 @@
 var nano = require('nano')
   , os = require('os')
   , async = require('async')
+  , util = require('utile')
   , odm = require('../lib/stork')
   ;
 
@@ -254,6 +255,45 @@ module.exports = integration({
         results[0].should.have.property('$schema', instances[0].$schema);
         results[1].should.have.properties(nakeds[1]);
         results[1].should.have.property('$schema', instances[1].$schema);
+        t.done();
+      });
+    });
+  }
+
+, 'create entity design document with complex-key query': function(t) {
+    var entityName = util.randomString(10)
+      , field1 = util.randomString(10)
+      , field2 = util.randomString(10)
+      , viewName = util.randomString(10)
+      , entity = odm.deliver(entityName, function() {
+          this.string(field1);
+          this.string(field2);
+          this.view(viewName, [field1, field2]);
+        })
+      ;
+
+    entity.to(dburl).sync(function(e) {
+      if(e) {
+        return t.done(e);
+      }
+      db.get('_design/' + entityName, function(e, doc) {
+        var customView
+          ;
+        if(e) {
+          return t.done(e);
+        }
+        doc.should.be.ok;
+        doc.should.have.property('views');
+        doc.views.should.have.property('all');
+        doc.views.all.should.have.property('map');
+        doc.views.all.map.indexOf('emit(doc._id').should.be.greaterThan(-1);
+
+        doc.views.should.have.property(viewName);
+        doc.views[viewName].should.have.property('map');
+        customView = doc.views[viewName].map;
+        customView.indexOf('\'' + field1 + '\'').should.be.greaterThan(-1);
+        customView.indexOf('\'' + field2 + '\'').should.be.greaterThan(-1);
+        customView.indexOf('doc.kind === \'' + entityName + '\'').should.be.greaterThan(-1);
         t.done();
       });
     });
