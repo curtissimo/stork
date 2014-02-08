@@ -25,23 +25,20 @@ Inspired by [resourceful](https://github.com/flatiron/resourceful).
 8. Commit.
 9. Make a PULL REQUEST if you're not already a contributor.
 
-## First things first: defining an entity
+## Installing
 
-To create an entity definition with stork, you have to `require` it and
-`deliver` the named entity. We require a type name to allow a human-readable
-attribute of the document that defines its type.
+Because we're still developing, this ain't on npm, yet. So, right now, you
+can run the following commands to include it in your project.
 
-```JavaScript
-var odm = require('stork')
-  ;
-
-var User = odm.deliver('user');
-
-// or, if you want some validation and views for the values of your entity
-
-var User = odm.deliver('user', function() {
-  // property validation defined here
-  // views defined here
-  // instance method defined here
-});
 ```
+git clone https://github.com/realistschuckle/stork.git
+cd stork
+npm link
+```
+
+Read more about the [`npm-link`](https://npmjs.org/doc/cli/npm-link.html)
+command.
+
+## API
+
+You can find documentation about **stork** over at the [Wiki](./wiki).
