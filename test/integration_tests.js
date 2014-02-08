@@ -105,6 +105,7 @@ module.exports = integration({
         if(e) {
           return t.done(e);
         }
+
         doc.dt = new Date(doc.dt);
         doc.should.be.ok;
         doc.should.have.property('_id', result._id);
