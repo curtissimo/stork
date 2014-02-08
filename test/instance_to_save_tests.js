@@ -7,7 +7,7 @@ var should = require('should')
 var empty = function() {}
   ;
 
-exports['instance#to has #sync'] = {
+exports['instance#to has #save'] = {
   setUp: function(cb) {
     this.instance = odm.deliver('person', function() {
       this.string('firstName', {required: true});
