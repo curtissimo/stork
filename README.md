@@ -78,10 +78,6 @@ BlogPost = odm.deliver('discussion', function() {
   });
 });
 
-User.from(dburl).byEmail(function(err, users) {
-  users.forEach(function (user) { console.log(user); });
-});
-
 BlogPost.from(dburl).withComments(function(err, posts) {
   posts.forEach(function (post) {
     console.log(post);
