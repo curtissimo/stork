@@ -298,4 +298,57 @@ module.exports = integration({
       });
     });
   }
+
+, 'create entity design document with complex-key key mutator query': function(t) {
+    var entityName = util.randomString(10)
+      , field1 = util.randomString(10)
+      , field2 = util.randomString(10)
+      , value1 = util.randomString(20).toLowerCase()
+      , value2 = util.randomString(20).toLowerCase()
+      , viewName = util.randomString(10)
+      , field1Function = new Function("return doc['" + field1 + "'].toUpperCase();")
+      , field2Function = new Function("return doc['" + field2 + "'].toUpperCase();")
+      , firstKey = {}
+      , _ = firstKey[field2] = field1Function
+      , secondKey = {}
+      , _ = secondKey[field2] = field2Function
+      , Entity = odm.deliver(entityName, function() {
+          this.string(field1);
+          this.string(field2);
+          this.view(viewName, [firstKey, secondKey]);
+        })
+      , instances = [
+          Entity.new()
+        , Entity.new()
+        ]
+      , firstIndex = value1 < value2? 0 : 1
+      , secondIndex = 1 - firstIndex
+      ;
+
+    instances[0][field1] = value1;
+    instances[0][field2] = value2;
+
+    instances[1][field1] = value2;
+    instances[1][field2] = value1;
+
+    async.series([
+      function(cb) { Entity.to(dburl).sync(cb); }
+    , function(cb) { instances[0].to(dburl).save(cb); }
+    , function(cb) { instances[1].to(dburl).save(cb); }
+    ], function(err, results) {
+      if(err) {
+        return t.done(err);
+      }
+      db.view(entityName, viewName, function(err, result) {
+        if(err) {
+          return t.done(err);
+        }
+        result.total_rows.should.equal(2);
+        result.rows.should.have.length(2);
+        result.rows[firstIndex].key.should.eql([value1.toUpperCase(), value2.toUpperCase()]);
+        result.rows[secondIndex].key.should.eql([value2.toUpperCase(), value1.toUpperCase()]);
+        t.done();
+      });
+    });
+  }
 });

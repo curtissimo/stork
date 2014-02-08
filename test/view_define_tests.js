@@ -59,10 +59,13 @@ exports['view builder'] = {
     t.done();
   }
 
-, 'entry has a copy of the array': function(t, _) {
+, 'entry has a copy of the array': function(t) {
     var viewName = util.randomString(10)
       , keys = ['key1', 'key2']
-      , expected = [{key1: undefined}, {key2: undefined}]
+      , expected = [
+          {key1: undefined}
+        , {key2: undefined}
+        ]
       , Discussion = odm.deliver('discussion', function() {
           this.string('key1');
           this.string('key2');
@@ -73,6 +76,33 @@ exports['view builder'] = {
       ;
 
     views[viewName].should.eql(expected);
+    t.done();
+  }
+
+, 'entry has a copy of the array': function(t) {
+    var viewName = util.randomString(10)
+      , keys = [
+          {key1: function() {}}
+        , 'key2'
+        ]
+      , expected = [
+          {key1: function() {}}
+        , {key2: undefined}
+        ]
+      , Discussion = odm.deliver('discussion', function() {
+          this.string('key1');
+          this.string('key2');
+          this.view(viewName, keys);
+        })
+      , discussion = Discussion.new()
+      , views = discussion['$schema'].views
+      , viewSpec = views[viewName]
+      ;
+
+    viewSpec.should.have.length(2);
+    viewSpec[0].key1.should.be.Function;
+    viewSpec[0].key1.toString().should.equal(expected[0].key1.toString());
+    viewSpec[1].should.have.property('key2', undefined);
     t.done();
   }
 };

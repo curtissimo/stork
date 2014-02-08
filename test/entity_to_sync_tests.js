@@ -112,6 +112,53 @@ exports['Entity#to has #sync'] = {
             }
           }
         }
+      , db
+      ;
+
+    doc.views[viewName] = customView;
+    db = this.mockDb(doc, null, {});
+
+    this.views = function() {
+      this.string('ssn');
+      this.string('state');
+      this.view(viewName, [keyName, 'ssn']);
+    };
+
+    this.entity().to(db).sync(function(err) {
+      should(err).not.be.ok;
+      db.assertThrows();
+      t.done();
+    });
+  }
+
+, 'includes complex-key query with custom mutator as part of the definition': function(t, _) {
+    var viewName = util.randomString(10)
+      , keyName = util.randomString(10)
+      , customFunction = function(doc) { return doc.state.toUpperCase(); }
+      , customView = {
+          map: [
+            "function(doc) {",
+            "  var keys = [];",
+            "  if(doc.kind === 'entity') {",
+            "    keys[0] = (function (doc) { return doc.state.toUpperCase(); }(doc));",
+            "    emit([keys[0],doc['ssn']], null);",
+            "  }",
+            "}"
+          ].join('\n')
+        }
+      , doc = {
+          views: {
+            all: {
+              map: [
+                "function(doc) {",
+                "  if(doc.kind === 'entity') {",
+                "    emit(doc._id, null);",
+                "  }",
+                "}"
+              ].join('\n')
+            }
+          }
+        }
       , db = this.mockDb(doc, null, {})
       ;
 
@@ -120,7 +167,7 @@ exports['Entity#to has #sync'] = {
     this.views = function() {
       this.string('ssn');
       this.string('state');
-      this.view(viewName, [keyName, 'ssn']);
+      this.view(viewName, [{keyName: customFunction}, 'ssn']);
     };
 
     this.entity().to(db).sync(function(err) {
