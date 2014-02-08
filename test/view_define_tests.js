@@ -47,7 +47,7 @@ exports['view builder'] = {
   }
 
 , 'creates an entry in the schema views': function(t, _) {
-    var viewName = util.randomString(10)
+    var viewName = util.randomString(10).replace('_', '')
       , Discussion = odm.deliver('discussion', function() {
           this.view(viewName, ['key']);
         })
@@ -60,7 +60,7 @@ exports['view builder'] = {
   }
 
 , 'entry has a copy of the array': function(t) {
-    var viewName = util.randomString(10)
+    var viewName = util.randomString(10).replace('_', '')
       , keys = ['key1', 'key2']
       , expected = [
           {key1: undefined}
@@ -80,7 +80,7 @@ exports['view builder'] = {
   }
 
 , 'entry has a copy of the array': function(t) {
-    var viewName = util.randomString(10)
+    var viewName = util.randomString(10).replace('_', '')
       , keys = [
           {key1: function() {}}
         , 'key2'

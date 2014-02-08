@@ -88,8 +88,8 @@ exports['Entity#to has #sync'] = {
   }
 
 , 'includes complex-key query as part of the definition': function(t, _) {
-    var viewName = util.randomString(10)
-      , keyName = util.randomString(10)
+    var viewName = util.randomString(10).replace('_', '')
+      , keyName = util.randomString(10).replace('_', '')
       , customView = {
           map: [
             "function(doc) {",
@@ -132,8 +132,8 @@ exports['Entity#to has #sync'] = {
   }
 
 , 'includes complex-key query with custom mutator as part of the definition': function(t, _) {
-    var viewName = util.randomString(10)
-      , keyName = util.randomString(10)
+    var viewName = util.randomString(10).replace('_', '')
+      , keyName = util.randomString(10).replace('_', '')
       , customFunction = function(doc) { return doc.state.toUpperCase(); }
       , customView = {
           map: [

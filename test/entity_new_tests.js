@@ -7,7 +7,7 @@ var odm = require('../lib/stork')
 
 exports['entity has #new'] = {
   setUp: function(cb) {
-    this.expectedKind = util.randomString(10)
+    this.expectedKind = util.randomString(10).replace('_', '');
     this.User = odm.deliver(this.expectedKind, function() {
       this.timestamps();
     });
@@ -78,7 +78,7 @@ exports['entity has #new'] = {
         , age: 26
         , saySomething: function() {console.log("Cool!");}
         }
-      , id = util.randomString(10)
+      , id = util.randomString(10).replace('_', '')
       , keys = Object.keys(proto)
       , user = this.User.new(id, proto)
       ;
@@ -102,7 +102,7 @@ exports['entity has #new'] = {
         , _id: 'foo'
         , saySomething: function() {console.log("Cool!");}
         }
-      , id = util.randomString(10)
+      , id = util.randomString(10).replace('_', '')
       , keys = Object.keys(proto)
       , user = this.User.new(id, proto)
       ;
@@ -130,7 +130,7 @@ exports['entity has #new'] = {
         , updatedOn: new Date()
         , saySomething: function() {console.log("Cool!");}
         }
-      , id = util.randomString(10)
+      , id = util.randomString(10).replace('_', '')
       , keys = Object.keys(proto)
       , user = this.User.new(id, proto)
       ;

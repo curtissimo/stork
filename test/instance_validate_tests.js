@@ -7,7 +7,7 @@ var odm = require('../lib/stork')
 
 exports['instance has #validate'] = {
   setUp: function(cb) {
-    this.expectedKind = util.randomString(10)
+    this.expectedKind = util.randomString(10).replace('_', '')
     this.User = odm.deliver(this.expectedKind);
     cb();
   }

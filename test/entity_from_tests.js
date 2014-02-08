@@ -100,4 +100,19 @@ exports['entity has #from'] = {
 
     t.done();
   }
+
+, 'that returns an object with a method named for a view': function(t) {
+    var Entity = odm.deliver('entity', function() {
+          this.view('myView', ['attr']);
+        })
+      , dburl = 'http://localhost:5984/stork_test'
+      , _ = null
+      , from = Entity.from(dburl)
+      ;
+
+    from.should.have.property('myView');
+    from.get.should.be.a.Function;
+
+    t.done();
+  }
 }

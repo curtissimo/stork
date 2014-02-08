@@ -261,10 +261,10 @@ module.exports = integration({
   }
 
 , 'create entity design document with complex-key query': function(t) {
-    var entityName = util.randomString(10)
-      , field1 = util.randomString(10)
-      , field2 = util.randomString(10)
-      , viewName = util.randomString(10)
+    var entityName = util.randomString(10).replace('_', '')
+      , field1 = util.randomString(10).replace('_', '')
+      , field2 = util.randomString(10).replace('_', '')
+      , viewName = util.randomString(10).replace('_', '')
       , entity = odm.deliver(entityName, function() {
           this.string(field1);
           this.string(field2);
@@ -300,11 +300,11 @@ module.exports = integration({
   }
 
 , 'create entity design document with complex-key key mutator query': function(t) {
-    var entityName = util.randomString(10)
-      , field1 = util.randomString(10)
-      , field2 = util.randomString(10)
-      , value1 = util.randomString(20).toLowerCase()
-      , value2 = util.randomString(20).toLowerCase()
+    var entityName = util.randomString(10).replace('_', '')
+      , field1 = util.randomString(10).replace('_', '')
+      , field2 = util.randomString(10).replace('_', '')
+      , value1 = util.randomString(20).toLowerCase().replace('_', '')
+      , value2 = util.randomString(20).toLowerCase().replace('_', '')
       , viewName = util.randomString(10)
       , field1Function = new Function("return doc['" + field1 + "'].toUpperCase();")
       , field2Function = new Function("return doc['" + field2 + "'].toUpperCase();")
@@ -347,6 +347,36 @@ module.exports = integration({
         result.rows.should.have.length(2);
         result.rows[firstIndex].key.should.eql([value1.toUpperCase(), value2.toUpperCase()]);
         result.rows[secondIndex].key.should.eql([value2.toUpperCase(), value1.toUpperCase()]);
+        t.done();
+      });
+    });
+  }
+
+, 'execute complex-key query for entity from special method': function(t) {
+    var Entity = odm.deliver('someEntity', function() {
+          this.string('s');
+          this.string('dt');
+          this.view('someView', ['dt', 's']);
+        })
+      , nakeds = [
+          {s: 'text', dt: new Date(2012, 6, 14), extra: 1}
+        , {s: 'txet', dt: new Date(2010, 9, 21), extra: -1}
+        ]
+      , instances = [
+          Entity.new(nakeds[0])
+        , Entity.new(nakeds[1])
+        ]
+      , from = Entity.from(dburl)
+      ;
+
+    async.series([
+      function(cb) { Entity.to(dburl).sync(cb); }
+    , function(cb) { instances[0].to(dburl).save(cb); }
+    , function(cb) { instances[1].to(dburl).save(cb); }
+    ], function(err, results) {
+      Entity.from(db).someView(function(err, results) {
+        results[0].should.have.properties(nakeds[1]);
+        results[1].should.have.properties(nakeds[0]);
         t.done();
       });
     });
