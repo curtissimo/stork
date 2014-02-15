@@ -5,21 +5,21 @@ var should = require('should')
 var odm = require('../lib/stork')
   ;
 
-exports['schema builder has children method'] = function(t) {
+exports['schema builder has composes method'] = function(t) {
   var called = false;
   odm.deliver('discussion', function() {
     called = true;
-    this.should.have.property('children');
+    this.should.have.property('composes');
     this.array.should.be.a.Function;
   });
   called.should.be.true;
   t.done();
 };
 
-exports['children property builder'] = {
+exports['composes property builder'] = {
   'requires a name': function(t) {
     var Discussion = odm.deliver('discussion', function() {
-      this.children.should.throw('children definer requires a name');
+      this.composes.should.throw('composes definer requires a name');
     });
     t.done();
   }
@@ -30,13 +30,13 @@ exports['children property builder'] = {
       ;
 
     odm.deliver('discussion', function () {
-      this.children.bind(this, 'name', Comment).should.not.throw();
+      this.composes.bind(this, 'name', Comment).should.not.throw();
     });
 
     things.forEach(function(thing) {
       odm.deliver('discussion', function () {
-        var boundChildren = this.children.bind(this, 'name', thing);            
-        boundChildren.should.throw('children definer requires an entity');
+        var boundChildren = this.composes.bind(this, 'name', thing);            
+        boundChildren.should.throw('composes definer requires an entity');
       });
     });
     t.done();
@@ -45,7 +45,7 @@ exports['children property builder'] = {
 , 'generates an instance in the schema': function(t) {
     var Comment = odm.deliver('comment')
       , Discussion = odm.deliver('discussion', function () {
-          this.children('comments', Comment);
+          this.composes('comments', Comment);
         })
       , discussion = Discussion.new()
       , properties = discussion.$schema.properties
@@ -60,7 +60,7 @@ exports['children property builder'] = {
 , 'works with instances': function(t) {
     var Comment = odm.deliver('comment')
       , Discussion = odm.deliver('discussion', function() {
-          this.children('comments', Comment);
+          this.composes('comments', Comment);
         })
       , discussion = Discussion.new()
       , comments = [
@@ -86,10 +86,10 @@ exports['children property builder'] = {
   }
 
 
-, 'fails validation for incorrect children types': function(t) {
+, 'fails validation for incorrect composes types': function(t) {
     var Comment = odm.deliver('comment')
       , Discussion = odm.deliver('discussion', function() {
-          this.children('comments', Comment);
+          this.composes('comments', Comment);
         })
       , discussion = Discussion.new()
       , comments = [
