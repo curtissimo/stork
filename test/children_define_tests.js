@@ -10,7 +10,7 @@ exports['schema builder has composes method'] = function(t) {
   odm.deliver('discussion', function() {
     called = true;
     this.should.have.property('composes');
-    this.array.should.be.a.Function;
+    this.composes.should.be.a.Function;
   });
   called.should.be.true;
   t.done();
