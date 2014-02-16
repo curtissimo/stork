@@ -382,4 +382,32 @@ module.exports = integration({
       });
     });
   }
+
+, 'save object with ref': function(t) {
+    var entityName = 'sorty'
+      , referredName = 'morty'
+      , Morty = odm.deliver(referredName)
+      , Entity = odm.deliver(entityName, function() {
+          this.ref('other', Morty)
+        })
+      , referred = Morty.new()
+      , entity = Entity.new({ other: referred })
+      ;
+
+    async.series([
+      function(cb) { referred.to(dburl).save(cb); }
+    , function(cb) { entity.to(dburl).save(cb); }
+    ], function(err, results) {
+      if(err) {
+        return t.done(err);
+      }
+      db.get(entity._id, function(e, doc) {
+        if(e) {
+          return t.done(e);
+        }
+        doc.should.have.property('$otherId', referred._id);
+        t.done();
+      });
+    });
+  }
 });

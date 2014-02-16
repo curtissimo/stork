@@ -209,3 +209,42 @@ exports['instance#to has #save'] = {
     });
   }
 };
+
+exports['instances that use #ref'] = {
+  setUp: function(cb) {
+    var Person = this.Person = odm.deliver('person')
+      , _ = this.Discussion = odm.deliver('discussion', function() {
+          this.ref('author', Person, { required: true });
+        })
+      ;
+
+    // Because node mock is stupid loud.
+    this.errorStream = console.error;
+    console.error = function() {};
+    cb();
+  }
+
+, tearDown: function(cb) {
+    // Because node mock is stupid loud.
+    console.error = this.errorStream;
+    cb();
+  }
+
+, 'saves the state of the object with the id': function(t) {
+    var person = this.Person.new({ _id: 'Charles Darwin '})
+      , discussion = this.Discussion.new({ author: person })
+      , state = { $authorId: person._id }
+      , callbackState = { _id: 'someId', $authorId: person._id, _rev: '1' }
+      , callbackArgs = [ null, callbackState ]
+
+      , empty = function() {}
+      , db = mock.mock('insert').takes(state, empty).calls(1, callbackArgs)
+      ;
+    db.config = { url: true, db: true };
+
+    discussion.to(db).save(function(e, d) {
+      db.assertThrows();
+      t.done();
+    });
+  }
+};
