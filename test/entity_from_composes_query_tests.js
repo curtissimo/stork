@@ -18,15 +18,20 @@ exports['Entity#from provides a query function'] = {
       , Composed = odm.deliver(this.composedName)
       , relViewName = 'with' + util.capitalize(relName)
       ;
-    
-    
+
     this.Entity = odm.deliver(this.entityName, function() {
       this.composes(relName, Composed);
     });
-    this.mockDb = function(err, result) {
-      var db = mock.mock('view')
-        .takes(entityName, relViewName, {include_docs: true}, empty)
-        .calls(3, [err, result]);
+    this.mockDb = function(id, err, result) {
+      var opts = {
+            include_docs: true
+          , startkey: [id, 0]
+          , endkey: [id, 2]
+          }
+        , db = mock.mock('view')
+          .takes(entityName, relViewName, opts, empty)
+          .calls(3, [err, result])
+        ;
       db.config = {url: true, db: true};
       return db;
     };
@@ -46,10 +51,11 @@ exports['Entity#from provides a query function'] = {
 , 'that invokes the db#view(entityName, relName, ...) method': function(t) {
     var Entity = this.Entity
       , value = {}
-      , db = this.mockDb(null, value)
+      , id = 'sdfakjdhf'
+      , db = this.mockDb(id, null, value)
       , relName = 'with' + util.capitalize(this.relName)
       ;
-    Entity.from(db)[relName](function(err, result) {
+    Entity.from(db)[relName](id, function(err, result) {
       db.assertThrows();
       t.done();
     });
@@ -58,10 +64,11 @@ exports['Entity#from provides a query function'] = {
 , 'that returns the error from db#view if one occurs': function(t) {
     var Entity = this.Entity
       , value = {}
-      , db = this.mockDb(value, null)
+      , id = 'pqiuwernfiu'
+      , db = this.mockDb(id, value, null)
       , relName = 'with' + util.capitalize(this.relName)
       ;
-    Entity.from(db)[relName](function(err, result) {
+    Entity.from(db)[relName](id, function(err, result) {
       err.should.be.ok;
       should(result).not.be.ok;
       t.done();
@@ -71,10 +78,11 @@ exports['Entity#from provides a query function'] = {
 , 'that returns an empty array if db#view returns no results': function(t) {
     var Entity = this.Entity
       , value = {rows: []}
-      , db = this.mockDb(null, value)
+      , id = 'ouwqyebrou'
+      , db = this.mockDb(id, null, value)
       , relName = 'with' + util.capitalize(this.relName)
       ;
-    Entity.from(db)[relName](function(err, result) {
+    Entity.from(db)[relName](id, function(err, result) {
       should(err).not.be.ok;
       should(result).not.be.ok;
       t.done();
@@ -83,19 +91,20 @@ exports['Entity#from provides a query function'] = {
 
 , 'that returns an instance with composed children if db#view returns results': function(t) {
     var Entity = this.Entity
+      , id = 'entity#1'
       , results = { rows: [
-          { doc: { _id: 'entity#1', _rev: '34' }}
+          { doc: { _id: id, _rev: '34' }}
         , { doc: { _id: 'composed#1', _rev: '99' }}
         , { doc: { _id: 'composed#2', _rev: '23' }}
         , { doc: { _id: 'composed#3', _rev: '56' }}
         , { doc: { _id: 'composed#4', _rev: '73' }}
         ]}
-      , db = this.mockDb(null, results)
+      , db = this.mockDb(id, null, results)
       , relName = this.relName
       , calculatedRelName = 'with' + util.capitalize(relName)
       ;
 
-    Entity.from(db)[calculatedRelName](function(err, entity) {
+    Entity.from(db)[calculatedRelName](id, function(err, entity) {
       var i
         , composed
         ;
