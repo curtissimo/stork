@@ -33,7 +33,6 @@ Comment = odm.devlier('comment', function() {
   this.string('content');
   this.timestamps();
 
-  // DOES NOT EXIST, YET: this.ref
   this.ref('author', User, { required: true });
 });
 
@@ -44,14 +43,9 @@ BlogPost = odm.deliver('discussion', function() {
   this.timestamps();
   this.view('byUpdatedOn', ['updatedOn']);
 
-  // DOES NOT EXIST, YET: this.ref
   this.ref('author', User, { required: true });
 
-  // DOES NOT EXIST, YET: this.children
-  this.children('comments', Comment);
-
-  // DOES NOT EXIST, YET: this.childview
-  this.childview('withComments', [ 'comments'] );
+  this.composes('comments', Comment);
 
   // DOES NOT EXIST, YET: this.method
   this.method('addComment', function (title, content, author) {
