@@ -7,17 +7,20 @@ var should = require('should')
 var empty = function() {}
   ;
 
-exports['Entity#from has #all'] = {
+exports['Entity#from provides a query function'] = {
   setUp: function(cb) {
-    this.entityName = util.randomString(10).replace('_', '');
+    var viewName = this.viewName = util.randomString(10).replace('_', '')
+      , entityName = this.entityName = util.randomString(10).replace('_', '')
+      ;
+    
     this.Entity = odm.deliver(this.entityName, function() {
       this.string('s');
       this.datetime('dt');
-      this.timestamps();
+      this.view(viewName, ['dt', 's']);
     });
     this.mockDb = function(err, result) {
       var db = mock.mock('view')
-        .takes(this.entityName, 'all', {include_docs: true}, empty)
+        .takes(entityName, viewName, {include_docs: true}, empty)
         .calls(3, [err, result]);
       db.config = {url: true, db: true};
       return db;
@@ -35,12 +38,13 @@ exports['Entity#from has #all'] = {
     cb();
   }
 
-, 'that invokes the db#view(entityName, "all", ...) method': function(t) {
+, 'that invokes the db#view(entityName, viewName, ...) method': function(t) {
     var Entity = this.Entity
       , value = {}
+      , viewName = util.randomString(10).replace('_', '')
       , db = this.mockDb(null, value)
       ;
-    Entity.from(db).all(function(err, result) {
+    Entity.from(db)[this.viewName](function(err, result) {
       db.assertThrows();
       t.done();
     });
@@ -51,7 +55,7 @@ exports['Entity#from has #all'] = {
       , value = {}
       , db = this.mockDb(value, null)
       ;
-    Entity.from(db).all(function(err, result) {
+    Entity.from(db)[this.viewName](function(err, result) {
       err.should.be.ok;
       should(result).not.be.ok;
       t.done();
@@ -63,7 +67,7 @@ exports['Entity#from has #all'] = {
       , value = {rows: []}
       , db = this.mockDb(null, value)
       ;
-    Entity.from(db).all(function(err, result) {
+    Entity.from(db)[this.viewName](function(err, result) {
       should(err).not.be.ok;
       result.should.be.an.Array;
       result.should.be.empty;
@@ -95,7 +99,7 @@ exports['Entity#from has #all'] = {
     dateProperties.forEach(function(prop) {
       match[prop] = new Date(match[prop]);
     });
-    Entity.from(db).all(function(err, result) {
+    Entity.from(db)[this.viewName](function(err, result) {
       var instance
         ;
       should(err).not.be.ok;

@@ -9,7 +9,7 @@ var empty = function() {}
 
 exports['Entity#from has #get'] = {
   setUp: function(cb) {
-    this.entityName = util.randomString(10);
+    this.entityName = util.randomString(10).replace('_', '');
     this.Entity = odm.deliver(this.entityName, function() {
       this.string('s');
       this.datetime('dt');
@@ -38,7 +38,7 @@ exports['Entity#from has #get'] = {
 , 'that invokes the db#get(id, ...) method': function(t) {
     var Entity = this.Entity
       , value = {}
-      , id = util.randomString(10)
+      , id = util.randomString(10).replace('_', '')
       , db = this.mockDb(id, null, value)
       ;
     Entity.from(db).get(id, function(err, result) {
@@ -50,7 +50,7 @@ exports['Entity#from has #get'] = {
 , 'that returns the error from db#view if one occurs': function(t) {
     var Entity = this.Entity
       , value = {}
-      , id = util.randomString(10)
+      , id = util.randomString(10).replace('_', '')
       , db = this.mockDb(id, value, null)
       ;
     Entity.from(db).get(id, function(err, result) {
@@ -73,7 +73,7 @@ exports['Entity#from has #get'] = {
         }
       , match = util.clone(obj1)
       , dateProperties = ['dt', 'createdOn', 'updatedOn']
-      , id = util.randomString(10)
+      , id = util.randomString(10).replace('_', '')
       , db = this.mockDb(id, null, obj1)
       ;
     dateProperties.forEach(function(prop) {

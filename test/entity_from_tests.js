@@ -75,7 +75,7 @@ exports['entity has #from'] = {
     t.done();
   }
 
-, 'that returns an object with a all method': function(t) {
+, 'that returns an object with an all method': function(t) {
     var Entity = odm.deliver('entity')
       , dburl = 'http://localhost:5984/stork_test'
       , _ = null
@@ -97,6 +97,34 @@ exports['entity has #from'] = {
 
     from.should.have.property('get');
     from.get.should.be.a.Function;
+
+    t.done();
+  }
+
+, 'that returns an object with a method named for a view': function(t) {
+    var Entity = odm.deliver('entity', function() {
+          this.view('myView', ['attr']);
+        })
+      , dburl = 'http://localhost:5984/stork_test'
+      , _ = null
+      , from = Entity.from(dburl)
+      ;
+
+    from.should.have.property('myView');
+    from.get.should.be.a.Function;
+
+    t.done();
+  }
+
+, 'that returns an object with a withRefs method': function(t) {
+    var Entity = odm.deliver('entity')
+      , dburl = 'http://localhost:5984/stork_test'
+      , _ = null
+      , from = Entity.from(dburl)
+      ;
+
+    from.should.have.property('withRefs');
+    from.withRefs.should.be.a.Function;
 
     t.done();
   }
