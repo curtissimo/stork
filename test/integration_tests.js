@@ -410,4 +410,31 @@ module.exports = integration({
       });
     });
   }
+
+
+, 'get object withRef': function(t) {
+    var entityName = 'sorty'
+      , referredName = 'morty'
+      , entityId = 'some id for me'
+      , Morty = odm.deliver(referredName)
+      , Entity = odm.deliver(entityName, function() {
+          this.ref('other', Morty)
+        })
+      , referred = Morty.new({ firstName: referredName })
+      , entity = Entity.new({ _id: entityId, other: referred })
+      ;
+
+    async.series([
+      function(cb) { referred.to(dburl).save(cb); }
+    , function(cb) { entity.to(dburl).save(cb); }
+    ], function(err, results) {
+      if(err) {
+        return t.done(err);
+      }
+      Entity.from(dburl).withRefs().get(entityId, function(e, entity) {
+        entity.other.firstName.should.be.equal(referredName);
+        t.done();
+      });
+    });
+  }
 });
