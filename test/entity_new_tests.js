@@ -63,7 +63,7 @@ exports['entity has #new'] = {
       ;
 
     keys.forEach(function(key) {
-      if(typeof proto[key] === 'function') {
+      if (typeof proto[key] === 'function') {
         user.should.not.have.property(key);
         return;
       }
@@ -86,7 +86,7 @@ exports['entity has #new'] = {
 
     user.should.have.property('_id', id);
     keys.forEach(function(key) {
-      if(typeof proto[key] === 'function') {
+      if (typeof proto[key] === 'function') {
         user.should.not.have.property(key);
         return;
       }
@@ -110,10 +110,10 @@ exports['entity has #new'] = {
 
     user.should.have.property('_id', id);
     keys.forEach(function(key) {
-      if(key === '_id') {
+      if (key === '_id') {
         return;
       }
-      if(typeof proto[key] === 'function') {
+      if (typeof proto[key] === 'function') {
         user.should.not.have.property(key);
         return;
       }
@@ -139,13 +139,13 @@ exports['entity has #new'] = {
 
     user.should.have.property('_id', id);
     keys.forEach(function(key) {
-      if(key === '_id') {
+      if (key === '_id') {
         return;
       }
-      if(key === 'createdOn' || key === 'updatedOn') {
+      if (key === 'createdOn' || key === 'updatedOn') {
         return user.should.have.property(key, undefined);
       }
-      if(typeof proto[key] === 'function') {
+      if (typeof proto[key] === 'function') {
         user.should.not.have.property(key);
         return;
       }

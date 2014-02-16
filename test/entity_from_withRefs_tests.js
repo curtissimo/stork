@@ -32,7 +32,7 @@ exports['Entity#from has #withRefs'] = {
     withRefsKeys.length.should.be.greaterThan(0);
     withRefs.should.not.have.property('withRefs');
     withRefsKeys.forEach(function(key) {
-      if(typeof withRefs[key] !== 'function') {
+      if (typeof withRefs[key] !== 'function') {
         return;
       }
       from.should.have.property(key);
