@@ -25,14 +25,14 @@ exports['instance#to has #save'] = {
         , callbackArgs = [err]
         , state = JSON.parse(JSON.stringify(doc))
         ;
-      if(id) {
+      if (id) {
         db = db.takes(state, id, empty);
         callbackIndex = 2;
       } else {
         db = db.takes(state, empty);
         callbackIndex = 1;
       }
-      if(!err) {
+      if (!err) {
         callbackArgs.push(mixin);
       }
       db = db.calls(callbackIndex, callbackArgs);
@@ -61,7 +61,7 @@ exports['instance#to has #save'] = {
     inst.to(db).save(function(e, doc) {
       should(e).not.be.ok;
       Object.keys(inst).forEach(function(key) {
-        if(typeof inst[key] === 'function') {
+        if (typeof inst[key] === 'function') {
           return;
         }
         doc.should.have.property(key, inst[key]);
@@ -241,6 +241,96 @@ exports['instances that use #ref'] = {
       , db = mock.mock('insert').takes(state, empty).calls(1, callbackArgs)
       ;
     db.config = { url: true, db: true };
+
+    discussion.to(db).save(function(e, d) {
+      db.assertThrows();
+      t.done();
+    });
+  }
+};
+
+exports['instances that use #composes'] = {
+  setUp: function(cb) {
+    var Comment = this.Comment = odm.deliver('comment')
+      , _ = this.Discussion = odm.deliver('discussion', function() {
+          this.composes('comments', Comment);
+        })
+      ;
+
+    // Because node mock is stupid loud.
+    this.errorStream = console.error;
+    console.error = function() {};
+    cb();
+  }
+
+, tearDown: function(cb) {
+    // Because node mock is stupid loud.
+    console.error = this.errorStream;
+    cb();
+  }
+
+, 'marks the composed objects with the id of the parent': function(t) {
+    var discussionId = 'disc'
+      , comments = [
+          this.Comment.new()
+        , this.Comment.new()
+        , this.Comment.new()
+        ]
+      , discussion = this.Discussion.new({ comments: comments })
+      , commentState = { kind: 'comment' }
+      , decisionState = { kind: 'discussion' }
+      , empty = function() {}
+      , db = mock
+              .mock('insert')
+              .takes(decisionState, empty)
+              .calls(1, [null, { id: '1', rev: '2' }])
+      , _ = db.mock('insert')
+              .takes({ $discussion_comments_id: '1' }, empty)
+              .calls(1, [null, { id: '1', rev: '1' }])
+      , _ = db.mock('insert')
+              .takes({ $discussion_comments_id: '1' }, empty)
+              .calls(1, [null, { id: '5', rev: '53' }])
+      , _ = db.mock('insert')
+              .takes({ $discussion_comments_id: '1' }, empty)
+              .calls(1, [null, { id: '13', rev: '22' }])
+      , _ = db.config = { url: true, db: true }
+      ;
+
+    discussion.to(db).save(function(e, d) {
+      db.assertThrows();
+      t.done();
+    });
+  }
+
+, 'does not fail for no composed objects': function(t) {
+    var discussionId = 'disc'
+      , discussion = this.Discussion.new()
+      , decisionState = { kind: 'discussion' }
+      , empty = function() {}
+      , db = mock
+              .mock('insert')
+              .takes(decisionState, empty)
+              .calls(1, [null, { id: '1', rev: '2' }])
+      , _ = db.config = { url: true, db: true }
+      ;
+
+    discussion.to(db).save(function(e, d) {
+      db.assertThrows();
+      t.done();
+    });
+  }
+
+, 'does not fail for empty composed objects': function(t) {
+    var discussionId = 'disc'
+      , discussion = this.Discussion.new({ comments: [] })
+      , decisionState = { kind: 'discussion' }
+      , empty = function() {}
+      , db = mock
+              .mock('insert')
+              .takes(decisionState, empty)
+              .calls(1, [null, { id: '1', rev: '2' }])
+      , _ = db.config = { url: true, db: true }
+      ;
 
     discussion.to(db).save(function(e, d) {
       db.assertThrows();

@@ -5,6 +5,9 @@ var should = require('should')
   ;
 
 var empty = function() {}
+  , makeName = function() {
+      return util.randomString(10).replace('_', '');
+    }
   ;
 
 exports['Entity#to has #sync'] = {
@@ -87,9 +90,9 @@ exports['Entity#to has #sync'] = {
     });
   }
 
-, 'includes complex-key query as part of the definition': function(t, _) {
-    var viewName = util.randomString(10).replace('_', '')
-      , keyName = util.randomString(10).replace('_', '')
+, 'that includes complex-key query as part of the definition': function(t, _) {
+    var viewName = makeName()
+      , keyName = makeName()
       , customView = {
           map: [
             "function(doc) {",
@@ -131,9 +134,9 @@ exports['Entity#to has #sync'] = {
     });
   }
 
-, 'includes complex-key query with custom mutator as part of the definition': function(t, _) {
-    var viewName = util.randomString(10).replace('_', '')
-      , keyName = util.randomString(10).replace('_', '')
+, 'that includes complex-key query with custom mutator as part of the definition': function(t, _) {
+    var viewName = makeName()
+      , keyName = makeName()
       , customFunction = function(doc) { return doc.state.toUpperCase(); }
       , customView = {
           map: [
@@ -168,6 +171,52 @@ exports['Entity#to has #sync'] = {
       this.string('ssn');
       this.string('state');
       this.view(viewName, [{keyName: customFunction}, 'ssn']);
+    };
+
+    this.entity().to(db).sync(function(err) {
+      should(err).not.be.ok;
+      db.assertThrows();
+      t.done();
+    });
+  }
+
+, 'that includes composed relationship as part of the definition': function(t, _) {
+    var relName = makeName()
+      , viewName = 'with' + util.capitalize(relName)
+      , keyName = makeName()
+      , composed = odm.deliver('composed')
+      , customView = {
+          map: [
+            "function(doc) {",
+            "  if(doc.kind === 'entity') {",
+            "    emit([doc._id, 0], null);",
+            "  }",
+            "  if(doc.kind === 'composed' && doc.$entity_" + relName + "_id) {",
+            "    emit([doc.$entity_" + relName + "_id, 1], null);",
+            "  }",
+            "}"
+          ].join('\n')
+        }
+      , doc = {
+          views: {
+            all: {
+              map: [
+                "function(doc) {",
+                "  if(doc.kind === 'entity') {",
+                "    emit(doc._id, null);",
+                "  }",
+                "}"
+              ].join('\n')
+            }
+          }
+        }
+      , db = this.mockDb(doc, null, {})
+      ;
+
+    doc.views[viewName] = customView;
+
+    this.views = function() {
+      this.composes(relName, composed);
     };
 
     this.entity().to(db).sync(function(err) {

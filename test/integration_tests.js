@@ -411,7 +411,6 @@ module.exports = integration({
     });
   }
 
-
 , 'get object withRef': function(t) {
     var entityName = 'sorty'
       , referredName = 'morty'
@@ -435,6 +434,29 @@ module.exports = integration({
         entity.other.firstName.should.be.equal(referredName);
         t.done();
       });
+    });
+  }
+
+, 'save object with composed relationship': function(t) {
+    var entityName = 'sorty'
+      , referredName = 'morty'
+      , Morty = odm.deliver(referredName)
+      , Entity = odm.deliver(entityName, function() {
+          this.composes('others', Morty)
+        })
+      , referred = Morty.new()
+      , entity = Entity.new({ others: [ referred ]})
+      ;
+
+    async.series([
+      function(cb) { referred.to(dburl).save(cb); }
+    , function(cb) { entity.to(dburl).save(cb); }
+    ], function(err, results) {
+      if(err) {
+        return t.done(err);
+      }
+      entity.others[0].should.have.property('$sorty_others_id', entity._id);
+      t.done();
     });
   }
 });
