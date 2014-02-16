@@ -85,7 +85,6 @@ exports['composes property builder'] = {
     t.done();
   }
 
-
 , 'fails validation for incorrect composes types': function(t) {
     var Comment = odm.deliver('comment')
       , Discussion = odm.deliver('discussion', function() {
