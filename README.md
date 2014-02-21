@@ -10,6 +10,17 @@ relationships.
 
 Inspired by [resourceful](https://github.com/flatiron/resourceful).
 
+## TOC
+
+* [What's it look like?](#whats-it-look-like)
+* [How to use it](#how-to-use-it)
+  * [Install stork for your project](#install-stork-for-your-project)
+  * [Require stork](#require-stork)
+  * [Declare an entity](#declare-an-entity)
+  * _more to come..._
+* [How to contribute](#how-to-contribute)
+* [Installing](#installing)
+
 ## What's it look like?
 
 ```JavaScript
@@ -82,11 +93,51 @@ BlogPost.from(dburl).withComments(function(err, posts) {
 });
 ```
 
-## API
+## How to use it
 
-You can find documentation about **stork** over at the [Wiki](./wiki).
+This section contains a task-based set of instructions on how to use `stork` for your CouchDB ODM needs. It models a simple reservation system.
 
-## Developing
+### Install stork for your project
+
+Follow the instructions, below, in [Installing](#installing).
+
+### require stork
+
+Yeah, that seems pretty self evident.
+
+```JavaScript
+var odm = require('stork');
+```
+
+### Declare an entity
+
+Let's declare an entity that stork knows about. When we declare entities, we provide a name and, if we want, a function that will describe a schema for us. We can define arrays, booleans, children, date/times, numbers, objects with their own schema, references to other documents, strings, timestamps, and views.
+
+`stork` uses the schema of the object to provide validation for you. You can save invalid documents to CouchDB, if you'd like. `stork` does not judge. `stork` just delivers.
+
+```JavaScript
+var event = odm.stork('event', function() {
+  this.string('name', { required: true, maxLength: 100 });
+  this.string('description, { required: true });
+  this.object('venue', { required: true }, function() {
+    this.string('url', { format: 'url' });
+    this.string('name');
+    this.string('address', { required: true });
+    this.string('city');
+    this.string('state');
+    this.string('zip', { format: /\d{5}/ });
+  });
+  
+  this.number('maximumGuests', { required: true });
+  this.boolean('cancelled');
+  
+  this.array('rsvps');
+
+  this.timestamps();
+});
+```
+
+## How to contribute
 
 0. Make sure you have [grunt-cli](http://gruntjs.com/getting-started)
    installed.
