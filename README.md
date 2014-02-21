@@ -118,7 +118,7 @@ Let's declare an entity that stork knows about. When we declare entities, we pro
 ```JavaScript
 var event = odm.stork('event', function() {
   this.string('name', { required: true, maxLength: 100 });
-  this.string('description, { required: true });
+  this.string('description', { required: true });
   this.object('venue', { required: true }, function() {
     this.string('url', { format: 'url' });
     this.string('name');
