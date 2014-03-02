@@ -114,7 +114,7 @@ exports['Entity#from provides a query function'] = {
       entity.should.have.properties(results.rows[0].doc);
       entity[relName].should.have.length(results.rows.length - 1);
 
-      for(i = 0; i < entity[relName].length; i += 1) {
+      for (i = 0; i < entity[relName].length; i += 1) {
         composed = entity[relName][i];
         composed.should.have.properties(results.rows[i + 1].doc);
       }

@@ -234,7 +234,7 @@ exports['datetime property builder'] = {
     dates.forEach(function(date, i) {
       vehicle.manufacturerDate = date;
       vehicle.validate().valid.should.be[results[i]];
-      if(!vehicle.manufacturerDate) {
+      if (!vehicle.manufacturerDate) {
         return;
       }
       vehicle.manufacturerDate.should.be.equal(date);

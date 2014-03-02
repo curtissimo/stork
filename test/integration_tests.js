@@ -18,7 +18,7 @@ var dbOverrides = {
       var run = !process.env['SKIP_STORK_DB_TESTS']
         ;
 
-      if(run) {
+      if (run) {
         return o;
       }
       return {};
@@ -40,11 +40,11 @@ module.exports = integration({
       ;
 
     entity.to(dburl).sync(function(e) {
-      if(e) {
+      if (e) {
         return t.done(e);
       }
       db.get('_design/' + entityName, function(e, doc) {
-        if(e) {
+        if (e) {
           return t.done(e);
         }
         doc.should.be.ok;
@@ -65,11 +65,11 @@ module.exports = integration({
       ;
 
     entity.to(dburl).sync(function(e) {
-      if(e) {
+      if (e) {
         return t.done(e);
       }
       db.get('_design/' + entityName, function(e, doc) {
-        if(e) {
+        if (e) {
           return t.done(e);
         }
         doc.should.be.ok;
@@ -96,13 +96,13 @@ module.exports = integration({
       ;
 
     instance.to(dburl).save(function(e, result) {
-      if(e) {
+      if (e) {
         return t.done(e);
       }
       result.should.have.property('_id');
       result.should.have.property('_rev');
       db.get(result._id, function(e, doc) {
-        if(e) {
+        if (e) {
           return t.done(e);
         }
 
@@ -133,13 +133,13 @@ module.exports = integration({
       ;
 
     instance.to(dburl).save(function(e, result) {
-      if(e) {
+      if (e) {
         return t.done(e);
       }
       result.should.have.property('_id', instance._id);
       result.should.have.property('_rev');
       db.get(result._id, function(e, doc) {
-        if(e) {
+        if (e) {
           return t.done(e);
         }
         doc.dt = new Date(doc.dt);
@@ -168,15 +168,15 @@ module.exports = integration({
       ;
 
     instance.to(dburl).save(function(e, result) {
-      if(e) {
+      if (e) {
         return t.done(e);
       }
       instance.to(dburl).save(function(e, result) {
-        if(e) {
+        if (e) {
           return t.done(e);
         }
         db.get(result._id, function(e, doc) {
-          if(e) {
+          if (e) {
             return t.done(e);
           }
           doc.dt = new Date(doc.dt);
@@ -216,7 +216,7 @@ module.exports = integration({
       objs.should.have.length(2);
       objs.forEach(function(obj, i) {
         Object.keys(obj).forEach(function(key) {
-          if(typeof obj[key] === 'function') {
+          if (typeof obj[key] === 'function') {
             return;
           }
           obj[key].should.be.eql(instances[i][key]);
@@ -274,13 +274,13 @@ module.exports = integration({
       ;
 
     entity.to(dburl).sync(function(e) {
-      if(e) {
+      if (e) {
         return t.done(e);
       }
       db.get('_design/' + entityName, function(e, doc) {
         var customView
           ;
-        if(e) {
+        if (e) {
           return t.done(e);
         }
         doc.should.be.ok;
@@ -337,11 +337,11 @@ module.exports = integration({
     , function(cb) { instances[0].to(dburl).save(cb); }
     , function(cb) { instances[1].to(dburl).save(cb); }
     ], function(err, results) {
-      if(err) {
+      if (err) {
         return t.done(err);
       }
       db.view(entityName, viewName, function(err, result) {
-        if(err) {
+        if (err) {
           return t.done(err);
         }
         result.total_rows.should.equal(2);
@@ -398,11 +398,11 @@ module.exports = integration({
       function(cb) { referred.to(dburl).save(cb); }
     , function(cb) { entity.to(dburl).save(cb); }
     ], function(err, results) {
-      if(err) {
+      if (err) {
         return t.done(err);
       }
       db.get(entity._id, function(e, doc) {
-        if(e) {
+        if (e) {
           return t.done(e);
         }
         doc.should.have.property('$otherId', referred._id);
@@ -427,7 +427,7 @@ module.exports = integration({
       function(cb) { referred.to(dburl).save(cb); }
     , function(cb) { entity.to(dburl).save(cb); }
     ], function(err, results) {
-      if(err) {
+      if (err) {
         return t.done(err);
       }
       Entity.from(dburl).withRefs().get(entityId, function(e, entity) {
@@ -452,7 +452,7 @@ module.exports = integration({
       function(cb) { referred.to(dburl).save(cb); }
     , function(cb) { entity.to(dburl).save(cb); }
     ], function(err, results) {
-      if(err) {
+      if (err) {
         return t.done(err);
       }
       entity.others[0].should.have.property('$sorty_others_id', entity._id);
@@ -496,16 +496,53 @@ module.exports = integration({
     , function(cb) { otherDiscussion.to(dburl).save(cb); }
     , function(cb) { Discussion.to(dburl).sync(cb); }
     ], function(err, results) {
-      if(err) {
+      if (err) {
         return t.done(err);
       }
       Discussion.from(dburl).withComments(discussionId, function(e, d) {
-        if(e) {
+        if (e) {
           return t.done(e);
         }
         d.text.should.equal('First Post!');
         d.comments.should.have.length(3);
         t.done();
+      });
+    });
+  }
+
+, 'execute custom query for entity from special method': function(t) {
+    var Entity = odm.deliver('someEntity', function() {
+          this.string('s');
+          this.string('dt');
+          this.view('someView', function(d, e) {
+            if(d.s) {e(d.s);}
+            if(d.dt) {e(d.dt);}
+          });
+        })
+      , nakeds = [
+          {s: 'key1', extra: 1}
+        , {s: 'key2', dt: 'key1', extra: -1}
+        ]
+      , instances = [
+          Entity.new(nakeds[0])
+        , Entity.new(nakeds[1])
+        ]
+      , from = Entity.from(dburl)
+      ;
+
+    async.series([
+      function(cb) { Entity.to(dburl).sync(cb); }
+    , function(cb) { instances[0].to(dburl).save(cb); }
+    , function(cb) { instances[1].to(dburl).save(cb); }
+    ], function(err, results) {
+      Entity.from(db).someView('key1', function(err, results) {
+        results[0].should.have.properties(nakeds[0]);
+        results[1].should.have.properties(nakeds[1]);
+  
+        Entity.from(db).someView('key2', function(err, results) {
+          results[0].should.have.properties(nakeds[1]);
+          t.done();
+        });
       });
     });
   }

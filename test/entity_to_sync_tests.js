@@ -225,4 +225,47 @@ exports['Entity#to has #sync'] = {
       t.done();
     });
   }
+
+, 'that includes custom query as part of the definition': function(t, _) {
+    var viewName = makeName()
+      , keyFn = function (doc, emitKey) { emitKey(doc.key); }
+      , customView = {
+          map: [
+            "function(doc) {",
+            "  if(doc.kind === 'entity') {",
+            "    (function (doc, emitKey) { emitKey(doc.key); }(doc, emit));",
+            "  }",
+            "}"
+          ].join('\n')
+        }
+      , doc = {
+          views: {
+            all: {
+              map: [
+                "function(doc) {",
+                "  if(doc.kind === 'entity') {",
+                "    emit(doc._id, null);",
+                "  }",
+                "}"
+              ].join('\n')
+            }
+          }
+        }
+      , db
+      ;
+
+    doc.views[viewName] = customView;
+    db = this.mockDb(doc, null, {});
+
+    this.views = function() {
+      this.string('key');
+      this.view(viewName, keyFn);
+    };
+
+    this.entity().to(db).sync(function(err) {
+      should(err).not.be.ok;
+      db.assertThrows();
+      t.done();
+    });
+  }
 };
