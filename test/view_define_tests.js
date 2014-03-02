@@ -24,24 +24,24 @@ exports['view builder'] = {
     t.done();
   }
 
-, 'requires an array for a second argument': function(t) {
+, 'requires an array or a function for a second argument': function(t) {
     var Discussion = odm.deliver('discussion', function() {
       this
         .view
         .bind(this.view, 'view_name')
         .should
-        .throw('view definer requires key definitions');
+        .throw('view definer requires key definitions or a function');
     });
     t.done();
   }
 
-, 'requires an array with at least one entry for a second argument': function(t) {
+, 'if an array as second argument, requires at least one entry': function(t) {
     var Discussion = odm.deliver('discussion', function() {
       this
         .view
         .bind(this.view, 'view_name', [])
         .should
-        .throw('view definer requires key definitions');
+        .throw('view definer requires key definitions in the array');
     });
     t.done();
   }
@@ -103,6 +103,24 @@ exports['view builder'] = {
     viewSpec[0].key1.should.be.Function;
     viewSpec[0].key1.toString().should.equal(expected[0].key1.toString());
     viewSpec[1].should.have.property('key2', undefined);
+    t.done();
+  }
+
+, 'entry has a reference to the function': function(t) {
+    var viewName = util.randomString(10).replace('_', '')
+      , fn = function () {}
+      , Discussion = odm.deliver('discussion', function() {
+          this.string('key1');
+          this.string('key2');
+          this.view(viewName, fn);
+        })
+      , discussion = Discussion.new()
+      , views = discussion['$schema'].views
+      , viewSpec = views[viewName]
+      ;
+
+    viewSpec.should.be.Function;
+    viewSpec.should.be.equal(fn);
     t.done();
   }
 };

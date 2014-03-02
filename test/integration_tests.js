@@ -509,4 +509,41 @@ module.exports = integration({
       });
     });
   }
+
+, 'execute custom query for entity from special method': function(t) {
+    var Entity = odm.deliver('someEntity', function() {
+          this.string('s');
+          this.string('dt');
+          this.view('someView', function(d, e) {
+            if(d.s) {e(d.s);}
+            if(d.dt) {e(d.dt);}
+          });
+        })
+      , nakeds = [
+          {s: 'key1', extra: 1}
+        , {s: 'key2', dt: 'key1', extra: -1}
+        ]
+      , instances = [
+          Entity.new(nakeds[0])
+        , Entity.new(nakeds[1])
+        ]
+      , from = Entity.from(dburl)
+      ;
+
+    async.series([
+      function(cb) { Entity.to(dburl).sync(cb); }
+    , function(cb) { instances[0].to(dburl).save(cb); }
+    , function(cb) { instances[1].to(dburl).save(cb); }
+    ], function(err, results) {
+      Entity.from(db).someView('key1', function(err, results) {
+        results[0].should.have.properties(nakeds[0]);
+        results[1].should.have.properties(nakeds[1]);
+  
+        Entity.from(db).someView('key2', function(err, results) {
+          results[0].should.have.properties(nakeds[1]);
+          t.done();
+        });
+      });
+    });
+  }
 });
