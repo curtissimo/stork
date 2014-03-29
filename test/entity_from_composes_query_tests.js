@@ -93,11 +93,11 @@ exports['Entity#from provides a query function'] = {
     var Entity = this.Entity
       , id = 'entity#1'
       , results = { rows: [
-          { doc: { _id: id, _rev: '34' }}
-        , { doc: { _id: 'composed#1', _rev: '99' }}
-        , { doc: { _id: 'composed#2', _rev: '23' }}
-        , { doc: { _id: 'composed#3', _rev: '56' }}
-        , { doc: { _id: 'composed#4', _rev: '73' }}
+          { key: [null, 0], doc: { _id: id, _rev: '34' }}
+        , { key: [null, 1], doc: { _id: 'composed#1', _rev: '99' }}
+        , { key: [null, 1], doc: { _id: 'composed#2', _rev: '23' }}
+        , { key: [null, 1], doc: { _id: 'composed#3', _rev: '56' }}
+        , { key: [null, 1], doc: { _id: 'composed#4', _rev: '73' }}
         ]}
       , db = this.mockDb(id, null, results)
       , relName = this.relName
