@@ -1,4 +1,4 @@
-stork [![Build Status](https://travis-ci.org/realistschuckle/stork.png)](https://travis-ci.org/realistschuckle/stork)
+stork [![Build Status](https://travis-ci.org/curtissimo/stork.png)](https://travis-ci.org/curtissimo/stork)
 =====
 
 Stork provides a layer of document management over the CouchDB with multitenant
