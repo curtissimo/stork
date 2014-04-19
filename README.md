@@ -1,4 +1,4 @@
-stork [![Build Status](https://travis-ci.org/curtissimo/stork.png)](https://travis-ci.org/curtissimo/stork)
+stork [![Build Status](https://travis-ci.org/curtissimo/stork.png?branch=develop)](https://travis-ci.org/curtissimo/stork)
 =====
 
 Stork provides a layer of document management over the CouchDB with multitenant
@@ -124,10 +124,10 @@ var event = odm.stork('event', function() {
     this.string('state');
     this.string('zip', { format: /\d{5}/ });
   });
-  
+
   this.number('maximumGuests', { required: true });
   this.boolean('cancelled');
-  
+
   this.array('rsvps');
 
   this.timestamps();
@@ -162,4 +162,3 @@ npm link
 
 Read more about the [`npm-link`](https://npmjs.org/doc/cli/npm-link.html)
 command.
-
