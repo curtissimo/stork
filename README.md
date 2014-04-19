@@ -1,4 +1,4 @@
-stork [![Build Status](https://travis-ci.org/realistschuckle/stork.png)](https://travis-ci.org/realistschuckle/stork)
+stork [![Build Status](https://travis-ci.org/curtissimo/stork.png?branch=master)](https://travis-ci.org/realistschuckle/stork)
 =====
 
 __NOTE:__ _We will end up moving this repository to another account and renaming
@@ -127,10 +127,10 @@ var event = odm.stork('event', function() {
     this.string('state');
     this.string('zip', { format: /\d{5}/ });
   });
-  
+
   this.number('maximumGuests', { required: true });
   this.boolean('cancelled');
-  
+
   this.array('rsvps');
 
   this.timestamps();
@@ -165,4 +165,3 @@ npm link
 
 Read more about the [`npm-link`](https://npmjs.org/doc/cli/npm-link.html)
 command.
-
