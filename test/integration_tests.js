@@ -460,56 +460,6 @@ module.exports = integration({
     });
   }
 
-, 'get composed objects through withXXX query': function(t) {
-    var Comment = odm.deliver('comment', function() {
-          this.string('text');
-        })
-      , Discussion = odm.deliver('discussion', function() {
-          this.string('text');
-          this.composes('comments', Comment);
-        })
-      , comments = [
-          Comment.new({ text: 'hello!' })
-        , Comment.new({ text: 'goofy!' })
-        , Comment.new({ text: 'world!' })
-        ]
-      , otherComment = Comment.new({ text: 'not me!' })
-      , discussionId = 'discussion#1'
-      , discussion = Discussion.new({
-          _id: discussionId
-        , comments: comments
-        , text: 'First Post!'
-        })
-      , otherDiscussion = Discussion.new({
-          _id: 'whatever'
-        , comments: [ otherComment ]
-        , text: 'ligature'
-        })
-      ;
-
-    async.series([
-      function(cb) { comments[0].to(dburl).save(cb); }
-    , function(cb) { comments[1].to(dburl).save(cb); }
-    , function(cb) { comments[2].to(dburl).save(cb); }
-    , function(cb) { discussion.to(dburl).save(cb); }
-    , function(cb) { otherComment.to(dburl).save(cb); }
-    , function(cb) { otherDiscussion.to(dburl).save(cb); }
-    , function(cb) { Discussion.to(dburl).sync(cb); }
-    ], function(err, results) {
-      if (err) {
-        return t.done(err);
-      }
-      Discussion.from(dburl).withComments(discussionId, function(e, d) {
-        if (e) {
-          return t.done(e);
-        }
-        d.text.should.equal('First Post!');
-        d.comments.should.have.length(3);
-        t.done();
-      });
-    });
-  }
-
 , 'execute custom query for entity from special method': function(t) {
     var Entity = odm.deliver('someEntity', function() {
           this.string('s');
@@ -538,12 +488,73 @@ module.exports = integration({
       Entity.from(db).someView('key1', function(err, results) {
         results[0].should.have.properties(nakeds[0]);
         results[1].should.have.properties(nakeds[1]);
-  
+
         Entity.from(db).someView('key2', function(err, results) {
           results[0].should.have.properties(nakeds[1]);
           t.done();
         });
       });
+    });
+  }
+
+, 'get composed objects through withXXX query': function(t) {
+    var Comment = odm.deliver('comment', function() {
+          this.string('text');
+        })
+      , Response = odm.deliver('response', function() {
+          this.string('text');
+        })
+      , Discussion = odm.deliver('discussion', function() {
+          this.string('text');
+          this.composes('comments', Comment, Response);
+        })
+      , comments = [
+          Comment.new({ text: 'hello!' })
+        , Response.new({ text: 'goofy!' })
+        , Comment.new({ text: 'world!' })
+        ]
+      , otherComment = Comment.new({ text: 'not me!' })
+      , discussionId = 'discussion#1'
+      , discussion = Discussion.new({
+          _id: discussionId
+        , comments: comments
+        , text: 'First Post!'
+        })
+      , otherDiscussion = Discussion.new({
+          _id: 'whatever'
+        , comments: [ otherComment ]
+        , text: 'ligature'
+        })
+      ;
+
+    async.series([
+      function(cb) { comments[2].to(dburl).save(cb); }
+    , function(cb) { comments[1].to(dburl).save(cb); }
+    , function(cb) { comments[0].to(dburl).save(cb); }
+    , function(cb) { discussion.to(dburl).save(cb); }
+    , function(cb) { otherComment.to(dburl).save(cb); }
+    , function(cb) { otherDiscussion.to(dburl).save(cb); }
+    , function(cb) { Discussion.to(dburl).sync(cb); }
+    ], function(err, results) {
+      if (err) {
+        return t.done(err);
+      }
+      try {
+        Discussion.from(dburl).withComments(discussionId, function(e, d) {
+          var i;
+          if (e) {
+            return t.done(e);
+          }
+          d.text.should.equal('First Post!');
+          d.comments.should.have.length(3);
+          for (i = 0; i < 3; i += 1) {
+            d.comments[i].should.have.property('_id', comments[i]._id);
+          }
+          t.done();
+        });
+      } catch (e) {
+        t.done(e);
+      }
     });
   }
 });
