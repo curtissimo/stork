@@ -8,7 +8,7 @@ var nano = require('nano')
 // Put your own CouchDb endpoint in the dbOverrides to customize where your
 // integration test runs.
 var dbOverrides = {
-      druthers: 'http://couchdb:5984/stork_test'
+      druthers: 'http://couchdb15:5984/stork_test'
     }
   , dburl = dbOverrides[os.hostname()] || 'http://localhost:5984/stork_test'
   , db = nano(dburl)
