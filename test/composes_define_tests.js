@@ -35,7 +35,7 @@ exports['composes property builder'] = {
 
     things.forEach(function(thing) {
       odm.deliver('discussion', function () {
-        var boundChildren = this.composes.bind(this, 'name', thing);            
+        var boundChildren = this.composes.bind(this, 'name', thing);
         boundChildren.should.throw('composes definer requires an entity');
       });
     });
@@ -53,7 +53,9 @@ exports['composes property builder'] = {
 
     properties.should.have.property('comments');
     properties.comments.should.have.property('type', ['null', 'array']);
-    properties.comments.should.have.property('entity', Comment);
+    properties.comments.entity.should.be.Array;
+    properties.comments.entity.should.have.length(1);
+    properties.comments.entity[0].should.be.equal(Comment);
     t.done();
   }
 

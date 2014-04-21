@@ -1,6 +1,6 @@
 {
   "name": "stork-odm",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Stork provides a layer of document management over the CouchDB.",
   "main": "./lib/stork.js",
   "scripts": {
@@ -24,12 +24,13 @@
   "license": "BSD-3-Clause",
   "devDependencies": {
     "nodeunit": "~0.8.3",
-    "should": "~3.1.0",
+    "should": "~3.3.0",
     "autotest": "~0.2.6",
     "nodemock": "~0.3.3",
     "grunt": "~0.4.2",
     "grunt-jslint": "~1.1.2",
-    "grunt-contrib-nodeunit": "~0.3.0"
+    "grunt-contrib-nodeunit": "~0.3.0",
+    "grunt-contrib-watch": "^0.6.1"
   },
   "repository": {
     "type": "git",
@@ -38,7 +39,7 @@
   "dependencies": {
     "utile": "~0.2.1",
     "revalidator": "~0.1.6",
-    "nano": "~4.4.0",
-    "async": "~0.2.10"
+    "nano": "~5.7.0",
+    "async": "~0.7.0"
   }
 }

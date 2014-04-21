@@ -92,12 +92,13 @@ exports['Entity#from provides a query function'] = {
 , 'that returns an instance with composed children if db#view returns results': function(t) {
     var Entity = this.Entity
       , id = 'entity#1'
+      , kind = this.composedName
       , results = { rows: [
-          { key: [null, 0], doc: { _id: id, _rev: '34' }}
-        , { key: [null, 1], doc: { _id: 'composed#1', _rev: '99' }}
-        , { key: [null, 1], doc: { _id: 'composed#2', _rev: '23' }}
-        , { key: [null, 1], doc: { _id: 'composed#3', _rev: '56' }}
-        , { key: [null, 1], doc: { _id: 'composed#4', _rev: '73' }}
+          { key: [null, 0], doc: { _id: id, _rev: '34', kind: Entity.$kind }}
+        , { key: [null, 1], doc: { _id: 'composed#1', _rev: '99', kind: kind }}
+        , { key: [null, 1], doc: { _id: 'composed#2', _rev: '23', kind: kind }}
+        , { key: [null, 1], doc: { _id: 'composed#3', _rev: '56', kind: kind }}
+        , { key: [null, 1], doc: { _id: 'composed#4', _rev: '73', kind: kind }}
         ]}
       , db = this.mockDb(id, null, results)
       , relName = this.relName

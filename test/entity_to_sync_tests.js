@@ -192,7 +192,7 @@ exports['Entity#to has #sync'] = {
             "    emit([doc._id, 0], null);",
             "  }",
             "  if(doc.kind === 'composed' && doc.$entity_" + relName + "_id) {",
-            "    emit([doc.$entity_" + relName + "_id, 1], null);",
+            "    emit([doc.$entity_" + relName + "_id, 1, doc.$entity_" + relName + "_order], null);",
             "  }",
             "}"
           ].join('\n')
@@ -217,6 +217,56 @@ exports['Entity#to has #sync'] = {
 
     this.views = function() {
       this.composes(relName, composed);
+    };
+
+    this.entity().to(db).sync(function(err) {
+      should(err).not.be.ok;
+      db.assertThrows();
+      t.done();
+    });
+  }
+
+, 'that includes multi-composed relationship as part of the definition': function(t, _) {
+    var relName = makeName()
+      , viewName = 'with' + util.capitalize(relName)
+      , keyName = makeName()
+      , composed = odm.deliver('composed')
+      , composeded = odm.deliver('composeded')
+      , customView = {
+          map: [
+            "function(doc) {",
+            "  if(doc.kind === 'entity') {",
+            "    emit([doc._id, 0], null);",
+            "  }",
+            "  if(doc.kind === 'composed' && doc.$entity_" + relName + "_id) {",
+            "    emit([doc.$entity_" + relName + "_id, 1, doc.$entity_" + relName + "_order], null);",
+            "  }",
+            "  if(doc.kind === 'composeded' && doc.$entity_" + relName + "_id) {",
+            "    emit([doc.$entity_" + relName + "_id, 1, doc.$entity_" + relName + "_order], null);",
+            "  }",
+            "}"
+          ].join('\n')
+        }
+      , doc = {
+          views: {
+            all: {
+              map: [
+                "function(doc) {",
+                "  if(doc.kind === 'entity') {",
+                "    emit(doc._id, null);",
+                "  }",
+                "}"
+              ].join('\n')
+            }
+          }
+        }
+      , db = this.mockDb(doc, null, {})
+      ;
+
+    doc.views[viewName] = customView;
+
+    this.views = function() {
+      this.composes(relName, composed, composeded);
     };
 
     this.entity().to(db).sync(function(err) {
