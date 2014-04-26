@@ -20,14 +20,11 @@ exports['Entity#to has #sync'] = {
     };
     this.mockDb = function(doc, err, result) {
       var db = mock.mock('insert')
-        .takes(doc, docName, empty)
+        .takes(doc, {}, empty)
         .calls(2, [err, result]);
       db.mock('get')
         .takes(docName, empty)
         .calls(1, [err, {_id: docName, _rev: rev}]);
-      db.mock('destroy')
-        .takes(docName, rev, empty)
-        .calls(2, []);
       db.config = {url: true, db: true};
       return db;
     };
