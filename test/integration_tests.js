@@ -210,6 +210,9 @@ module.exports = integration({
     , function(cb) { instances[1].to(dburl).save(cb); }
     , function(cb) { Entity.from(dburl).all(cb); }
     ], function(err, results) {
+      if (err) {
+        return t.done(err);
+      }
       var objs = results[results.length - 1]
         ;
       objs.should.be.an.Array;
@@ -248,10 +251,16 @@ module.exports = integration({
     , function(cb) { instances[0].to(dburl).save(cb); }
     , function(cb) { instances[1].to(dburl).save(cb); }
     ], function(err, results) {
+      if (err) {
+        return t.done(err);
+      }
       async.series([
         from.get.bind(from, results[1]._id)
       , from.get.bind(from, results[2]._id)
       ], function(err, results) {
+        if (err) {
+          return t.done(err);
+        }
         results[0].should.have.properties(nakeds[0]);
         results[0].should.have.property('$schema', instances[0].$schema);
         results[1].should.have.properties(nakeds[1]);
@@ -375,6 +384,9 @@ module.exports = integration({
     , function(cb) { instances[0].to(dburl).save(cb); }
     , function(cb) { instances[1].to(dburl).save(cb); }
     ], function(err, results) {
+      if (err) {
+        return t.done(err);
+      }
       Entity.from(db).someView(function(err, results) {
         results[0].should.have.properties(nakeds[1]);
         results[1].should.have.properties(nakeds[0]);
@@ -485,6 +497,9 @@ module.exports = integration({
     , function(cb) { instances[0].to(dburl).save(cb); }
     , function(cb) { instances[1].to(dburl).save(cb); }
     ], function(err, results) {
+      if (err) {
+        return t.done(err);
+      }
       Entity.from(db).someView('key1', function(err, results) {
         results[0].should.have.properties(nakeds[0]);
         results[1].should.have.properties(nakeds[1]);
