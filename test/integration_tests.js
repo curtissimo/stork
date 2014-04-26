@@ -57,6 +57,26 @@ module.exports = integration({
     });
   }
 
+, 'update entity design document': function(t) {
+    var entityName = 'defaulty'
+      , entity = odm.deliver(entityName)
+      ;
+
+    entity.to(dburl).sync(function(e, answer1) {
+      if (e) {
+        return t.done(e);
+      }
+      entity.to(dburl).sync(function(e, answer2) {
+        if (e) {
+          return t.done(e);
+        }
+        answer1.id.should.equal(answer2.id);
+        answer1.rev.should.not.equal(answer2.rev);
+        t.done();
+      });
+    });
+  }
+
 , 'create entity design document with sort': function(t) {
     var entityName = 'sorty'
       , entity = odm.deliver(entityName, function() {
