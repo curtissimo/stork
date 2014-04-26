@@ -28,9 +28,14 @@ var dbOverrides = {
 module.exports = integration({
   setUp: function(cb) {
     dbms.db.destroy(db.config.db, function(err) {
-      dbms.db.create(db.config.db, function(err) {
+      if (err) {
         cb(err);
-      });
+      }
+      setTimeout(function () {
+        dbms.db.create(db.config.db, function(err) {
+          cb(err);
+        });
+      }, 0);
     });
   }
 
@@ -277,6 +282,47 @@ module.exports = integration({
       async.series([
         from.get.bind(from, results[1]._id)
       , from.get.bind(from, results[2]._id)
+      ], function(err, results) {
+        if (err) {
+          return t.done(err);
+        }
+        results[0].should.have.properties(nakeds[0]);
+        results[0].should.have.property('$schema', instances[0].$schema);
+        results[1].should.have.properties(nakeds[1]);
+        results[1].should.have.property('$schema', instances[1].$schema);
+        t.done();
+      });
+    });
+  }
+
+, 'get a previously saved object with stork#form': function(t) {
+    var entityName = 'sorty'
+      , Entity = odm.deliver(entityName, function() {
+          this.string('s', {required: true});
+          this.datetime('dt', {required: true});
+        })
+      , nakeds = [
+          {s: 'text', dt: new Date(2012, 6, 14), extra: 1}
+        , {s: 'txet', dt: new Date(2013, 9, 21), extra: -1}
+        ]
+      , instances = [
+          Entity.new(nakeds[0])
+        , Entity.new(nakeds[1])
+        ]
+      , from = odm.from(dburl)
+      ;
+
+    async.series([
+      function(cb) { Entity.to(dburl).sync(cb); }
+    , function(cb) { instances[0].to(dburl).save(cb); }
+    , function(cb) { instances[1].to(dburl).save(cb); }
+    ], function(err, results) {
+      if (err) {
+        return t.done(err);
+      }
+      async.series([
+        from.get.bind(from, [ Entity ], results[1]._id)
+      , from.get.bind(from, [ Entity ], results[2]._id)
       ], function(err, results) {
         if (err) {
           return t.done(err);
