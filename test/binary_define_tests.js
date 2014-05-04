@@ -92,6 +92,13 @@ exports['binary property builder'] = {
 
     validation.valid.should.be.true;
 
+    house = House.new({photo: {
+      type: 'text/html',
+      content: new Buffer('123')
+    }});
+    validation = house.validate();
+    validation.valid.should.be.true;
+
     house = House.new();
     validation = house.validate();
     validation.valid.should.be.false;
@@ -101,6 +108,18 @@ exports['binary property builder'] = {
     error.should.have.property('property', 'photo');
     error.should.have.property('expected', true);
     error.should.have.property('message', 'is required');
+
+    ['', new Date(), 123, {}].forEach(function (val) {
+      house = House.new({photo: val});
+      validation = house.validate();
+      validation.valid.should.be.false;
+      validation.errors.should.have.length(1);
+      error = validation.errors[0];
+      error.should.have.property('attribute', 'type');
+      error.should.have.property('property', 'photo');
+      error.should.have.property('expected', 'object');
+      error.should.have.property('message', 'must be of type Buffer or object like {type: [mime/type], content: [Buffer]}');
+    });
 
     t.done();
   }

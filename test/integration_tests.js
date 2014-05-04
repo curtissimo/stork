@@ -29,10 +29,14 @@ module.exports = integration({
   setUp: function(cb) {
     dbms.db.destroy(db.config.db, function(err) {
       if (err) {
-        cb(err);
+        console.log('could not destroy database', db.config.db);
+        // return cb(err);
       }
       setTimeout(function () {
         dbms.db.create(db.config.db, function(err) {
+          if (err) {
+            console.log('could not create database', db.config.db);
+          }
           cb(err);
         });
       }, 0);
@@ -636,6 +640,62 @@ module.exports = integration({
       } catch (e) {
         t.done(e);
       }
+    });
+  }
+
+, 'save a binary property with a full specification': function(t) {
+    var Person = odm.deliver('person', function() {
+          this.binary('photo');
+        })
+      , person = Person.new({photo: {type: 'image/png', content: new Buffer('123')}})
+      ;
+
+    person.to(dburl).save(function (e) {
+      if (e) {
+        return t.done(e);
+      }
+      db.attachment.get(person._id, 'photo', function (e, body) {
+        if (e) {
+          return t.done(e);
+        }
+        // should does not compare Buffer contents correctly
+        JSON.stringify(body).should.equal(JSON.stringify(new Buffer('123')));
+        db.get(person._id, function (e, p) {
+          if (e) {
+            return t.done(e);
+          }
+          p._attachments.photo.content_type.should.equal('image/png');
+          t.done();
+        });
+      });
+    });
+  }
+
+, 'save a binary property with just the buffer': function(t) {
+    var Person = odm.deliver('person', function() {
+          this.binary('photo');
+        })
+      , person = Person.new({photo: new Buffer('abcdefg')})
+      ;
+
+    person.to(dburl).save(function (e) {
+      if (e) {
+        return t.done(e);
+      }
+      db.attachment.get(person._id, 'photo', function (e, body) {
+        if (e) {
+          return t.done(e);
+        }
+        // should does not compare Buffer contents correctly
+        JSON.stringify(body).should.equal(JSON.stringify(new Buffer('abcdefg')));
+        db.get(person._id, function (e, p) {
+          if (e) {
+            return t.done(e);
+          }
+          p._attachments.photo.content_type.should.equal('application/octet-stream');
+          t.done();
+        });
+      });
     });
   }
 });
