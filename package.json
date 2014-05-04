@@ -30,7 +30,8 @@
     "grunt": "~0.4.2",
     "grunt-jslint": "~1.1.2",
     "grunt-contrib-nodeunit": "~0.3.0",
-    "grunt-contrib-watch": "^0.6.1"
+    "grunt-contrib-watch": "^0.6.1",
+    "memorystream": "^0.2.0"
   },
   "repository": {
     "type": "git",

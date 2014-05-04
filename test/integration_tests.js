@@ -2,6 +2,7 @@ var nano = require('nano')
   , os = require('os')
   , async = require('async')
   , util = require('utile')
+  , MemoryStream = require('memorystream')
   , odm = require('../lib/stork')
   ;
 
@@ -694,6 +695,37 @@ module.exports = integration({
           }
           p._attachments.photo.content_type.should.equal('application/octet-stream');
           t.done();
+        });
+      });
+    });
+  }
+
+, 'get a binary property with the pipeFrom method': function(t) {
+    var Person = odm.deliver('person', function() {
+          this.binary('photo');
+        })
+      , id = 'iAmLegend'
+      , person = Person.new({photo: new Buffer('abcdefg'), _id: id})
+      ;
+
+    person.to(dburl).save(function (e) {
+      if (e) {
+        return t.done(e);
+      }
+      Person.from(dburl).get(id, function (e, per) {
+        if (e) {
+          return t.done(e);
+        }
+        var stream = new MemoryStream();
+        per.photo.pipeFrom(dburl)(stream);
+        stream.on('data', function(d) {
+          d.toString('utf8').should.be.equal('abcdefg');
+        });
+        stream.on('end', function () {
+          t.done();
+        });
+        stream.on('error', function(e) {
+          t.done(e);
         });
       });
     });

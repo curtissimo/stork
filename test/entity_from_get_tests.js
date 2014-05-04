@@ -91,3 +91,63 @@ exports['Entity#from has #get'] = {
     });
   }
 };
+
+exports['Entity#from has #get that handles binary properties'] = {
+  setUp: function(cb) {
+    this.entityName = util.randomString(10).replace('_', '');
+    this.Entity = odm.deliver(this.entityName, function() {
+      this.binary('b');
+    });
+    this.mockDb = function(id, err, result) {
+      var db = mock.mock('get')
+        .takes(id, empty)
+        .calls(1, [err, result]);
+      db.config = {url: true, db: true};
+      return db;
+    };
+
+    // Because node mock is stupid loud.
+    this.errorStream = console.error;
+    console.error = function() {};
+    cb();
+  }
+
+, tearDown: function(cb) {
+    // Because node mock is stupid loud.
+    console.error = this.errorStream;
+    cb();
+  }
+
+, 'by copying _attachments content_type and length information': function(t) {
+    var Entity = this.Entity
+      , value = {
+          _attachments: {
+            b: { content_type: 'image/png', length: 12345 }
+          }
+        }
+      , id = util.randomString(10).replace('_', '')
+      , db = this.mockDb(id, null, value)
+      ;
+    Entity.from(db).get(id, function(err, result) {
+      result.b.type.should.be.equal('image/png');
+      result.b.length.should.be.equal(12345);
+      t.done();
+    });
+  }
+
+, 'by having a pipeFrom method on the binary property': function(t) {
+    var Entity = this.Entity
+      , value = {
+          _attachments: {
+            b: { content_type: 'image/png', length: 12345 }
+          }
+        }
+      , id = util.randomString(10).replace('_', '')
+      , db = this.mockDb(id, null, value)
+      ;
+    Entity.from(db).get(id, function(err, result) {
+      result.b.pipeFrom.should.be.Function;
+      t.done();
+    });
+  }
+};
