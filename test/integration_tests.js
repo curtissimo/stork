@@ -700,6 +700,27 @@ module.exports = integration({
     });
   }
 
+, 'save an object with no binary value': function(t) {
+    var Person = odm.deliver('person', function() {
+          this.binary('photo');
+        })
+      , person = Person.new()
+      ;
+
+    person.to(dburl).save(function (e) {
+      if (e) {
+        return t.done(e);
+      }
+      db.get(person._id, function (e, p) {
+        if (e) {
+          return t.done(e);
+        }
+        t.ok(p._attachments === undefined);
+        t.done();
+      });
+    });
+  }
+
 , 'get a binary property with the pipeFrom method': function(t) {
     var Person = odm.deliver('person', function() {
           this.binary('photo');
