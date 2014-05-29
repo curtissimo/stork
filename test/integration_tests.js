@@ -2,6 +2,7 @@ var nano = require('nano')
   , os = require('os')
   , async = require('async')
   , util = require('utile')
+  , MemoryStream = require('memorystream')
   , odm = require('../lib/stork')
   ;
 
@@ -28,9 +29,18 @@ var dbOverrides = {
 module.exports = integration({
   setUp: function(cb) {
     dbms.db.destroy(db.config.db, function(err) {
-      dbms.db.create(db.config.db, function(err) {
-        cb(err);
-      });
+      if (err) {
+        console.log('could not destroy database', db.config.db);
+        // return cb(err);
+      }
+      setTimeout(function () {
+        dbms.db.create(db.config.db, function(err) {
+          if (err) {
+            console.log('could not create database', db.config.db);
+          }
+          cb(err);
+        });
+      }, 0);
     });
   }
 
@@ -52,6 +62,26 @@ module.exports = integration({
         doc.views.should.have.property('all');
         doc.views.all.should.have.property('map');
         doc.views.all.map.indexOf('emit(doc._id').should.be.greaterThan(-1);
+        t.done();
+      });
+    });
+  }
+
+, 'update entity design document': function(t) {
+    var entityName = 'defaulty'
+      , entity = odm.deliver(entityName)
+      ;
+
+    entity.to(dburl).sync(function(e, answer1) {
+      if (e) {
+        return t.done(e);
+      }
+      entity.to(dburl).sync(function(e, answer2) {
+        if (e) {
+          return t.done(e);
+        }
+        answer1.id.should.equal(answer2.id);
+        answer1.rev.should.not.equal(answer2.rev);
         t.done();
       });
     });
@@ -210,6 +240,9 @@ module.exports = integration({
     , function(cb) { instances[1].to(dburl).save(cb); }
     , function(cb) { Entity.from(dburl).all(cb); }
     ], function(err, results) {
+      if (err) {
+        return t.done(err);
+      }
       var objs = results[results.length - 1]
         ;
       objs.should.be.an.Array;
@@ -248,10 +281,57 @@ module.exports = integration({
     , function(cb) { instances[0].to(dburl).save(cb); }
     , function(cb) { instances[1].to(dburl).save(cb); }
     ], function(err, results) {
+      if (err) {
+        return t.done(err);
+      }
       async.series([
         from.get.bind(from, results[1]._id)
       , from.get.bind(from, results[2]._id)
       ], function(err, results) {
+        if (err) {
+          return t.done(err);
+        }
+        results[0].should.have.properties(nakeds[0]);
+        results[0].should.have.property('$schema', instances[0].$schema);
+        results[1].should.have.properties(nakeds[1]);
+        results[1].should.have.property('$schema', instances[1].$schema);
+        t.done();
+      });
+    });
+  }
+
+, 'get a previously saved object with stork#form': function(t) {
+    var entityName = 'sorty'
+      , Entity = odm.deliver(entityName, function() {
+          this.string('s', {required: true});
+          this.datetime('dt', {required: true});
+        })
+      , nakeds = [
+          {s: 'text', dt: new Date(2012, 6, 14), extra: 1}
+        , {s: 'txet', dt: new Date(2013, 9, 21), extra: -1}
+        ]
+      , instances = [
+          Entity.new(nakeds[0])
+        , Entity.new(nakeds[1])
+        ]
+      , from = odm.from(dburl)
+      ;
+
+    async.series([
+      function(cb) { Entity.to(dburl).sync(cb); }
+    , function(cb) { instances[0].to(dburl).save(cb); }
+    , function(cb) { instances[1].to(dburl).save(cb); }
+    ], function(err, results) {
+      if (err) {
+        return t.done(err);
+      }
+      async.series([
+        from.get.bind(from, [ Entity ], results[1]._id)
+      , from.get.bind(from, [ Entity ], results[2]._id)
+      ], function(err, results) {
+        if (err) {
+          return t.done(err);
+        }
         results[0].should.have.properties(nakeds[0]);
         results[0].should.have.property('$schema', instances[0].$schema);
         results[1].should.have.properties(nakeds[1]);
@@ -375,6 +455,9 @@ module.exports = integration({
     , function(cb) { instances[0].to(dburl).save(cb); }
     , function(cb) { instances[1].to(dburl).save(cb); }
     ], function(err, results) {
+      if (err) {
+        return t.done(err);
+      }
       Entity.from(db).someView(function(err, results) {
         results[0].should.have.properties(nakeds[1]);
         results[1].should.have.properties(nakeds[0]);
@@ -485,6 +568,9 @@ module.exports = integration({
     , function(cb) { instances[0].to(dburl).save(cb); }
     , function(cb) { instances[1].to(dburl).save(cb); }
     ], function(err, results) {
+      if (err) {
+        return t.done(err);
+      }
       Entity.from(db).someView('key1', function(err, results) {
         results[0].should.have.properties(nakeds[0]);
         results[1].should.have.properties(nakeds[1]);
@@ -555,6 +641,114 @@ module.exports = integration({
       } catch (e) {
         t.done(e);
       }
+    });
+  }
+
+, 'save a binary property with a full specification': function(t) {
+    var Person = odm.deliver('person', function() {
+          this.binary('photo');
+        })
+      , person = Person.new({photo: {type: 'image/png', content: new Buffer('123')}})
+      ;
+
+    person.to(dburl).save(function (e) {
+      if (e) {
+        return t.done(e);
+      }
+      db.attachment.get(person._id, 'photo', function (e, body) {
+        if (e) {
+          return t.done(e);
+        }
+        // should does not compare Buffer contents correctly
+        JSON.stringify(body).should.equal(JSON.stringify(new Buffer('123')));
+        db.get(person._id, function (e, p) {
+          if (e) {
+            return t.done(e);
+          }
+          p._attachments.photo.content_type.should.equal('image/png');
+          t.done();
+        });
+      });
+    });
+  }
+
+, 'save a binary property with just the buffer': function(t) {
+    var Person = odm.deliver('person', function() {
+          this.binary('photo');
+        })
+      , person = Person.new({photo: new Buffer('abcdefg')})
+      ;
+
+    person.to(dburl).save(function (e) {
+      if (e) {
+        return t.done(e);
+      }
+      db.attachment.get(person._id, 'photo', function (e, body) {
+        if (e) {
+          return t.done(e);
+        }
+        // should does not compare Buffer contents correctly
+        JSON.stringify(body).should.equal(JSON.stringify(new Buffer('abcdefg')));
+        db.get(person._id, function (e, p) {
+          if (e) {
+            return t.done(e);
+          }
+          p._attachments.photo.content_type.should.equal('application/octet-stream');
+          t.done();
+        });
+      });
+    });
+  }
+
+, 'save an object with no binary value': function(t) {
+    var Person = odm.deliver('person', function() {
+          this.binary('photo');
+        })
+      , person = Person.new()
+      ;
+
+    person.to(dburl).save(function (e) {
+      if (e) {
+        return t.done(e);
+      }
+      db.get(person._id, function (e, p) {
+        if (e) {
+          return t.done(e);
+        }
+        t.ok(p._attachments === undefined);
+        t.done();
+      });
+    });
+  }
+
+, 'get a binary property with the pipeFrom method': function(t) {
+    var Person = odm.deliver('person', function() {
+          this.binary('photo');
+        })
+      , id = 'iAmLegend'
+      , person = Person.new({photo: new Buffer('abcdefg'), _id: id})
+      ;
+
+    person.to(dburl).save(function (e) {
+      if (e) {
+        return t.done(e);
+      }
+      Person.from(dburl).get(id, function (e, per) {
+        if (e) {
+          return t.done(e);
+        }
+        var stream = new MemoryStream();
+        per.photo.pipeFrom(dburl)(stream);
+        stream.on('data', function(d) {
+          d.toString('utf8').should.be.equal('abcdefg');
+        });
+        stream.on('end', function () {
+          t.done();
+        });
+        stream.on('error', function(e) {
+          t.done(e);
+        });
+      });
     });
   }
 });

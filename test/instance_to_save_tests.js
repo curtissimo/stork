@@ -338,3 +338,70 @@ exports['instances that use #composes'] = {
     });
   }
 };
+
+exports['instances that use #binary'] = {
+  setUp: function(cb) {
+    this.Person = odm.deliver('person', function() {
+      this.binary('photo');
+    });
+
+    this.mockDb = function(doc, att, params, mixin) {
+      var db  = mock.mock('insert')
+        , callbackIndex = 3
+        , callbackArgs = [null]
+        , state = JSON.parse(JSON.stringify(doc))
+        ;
+      db = db.takes(state, att, params, empty);
+      callbackArgs.push(mixin);
+      db = db.calls(callbackIndex, callbackArgs);
+      return {
+        multipart: db,
+        config: {url: true, db: true}
+      };
+    };
+
+    // Because node mock is stupid loud.
+    this.errorStream = console.error;
+    console.error = function() {};
+    cb();
+  }
+
+, tearDown: function(cb) {
+    // Because node mock is stupid loud.
+    console.error = this.errorStream;
+    cb();
+  }
+
+, 'calls #multipart#insert on save for Buffer binary property': function(t) {
+    var Person = this.Person
+      , buffer = new Buffer('123')
+      , inst = Person.new({photo: buffer, _id: 'moo'})
+      , state = {kind: 'person', photo: 'photo', _id: 'moo'}
+      , attachments = [{name: 'photo', data: buffer}]
+      , mixin = {_id: 'woot', _rev: 'another'}
+      , db = this.mockDb(state, attachments, {doc_name: 'moo'}, mixin)
+      ;
+
+    inst.to(db).save(function(e, doc) {
+      should(e).not.be.ok;
+      t.done();
+    });
+  }
+
+, 'calls #multipart#insert on save for object/Buffer binary property': function(t) {
+    var Person = this.Person
+      , buffer = new Buffer('123')
+      , binary = {content: new Buffer('123'), type: 'application/octet-stream'}
+      , inst = Person.new({photo: binary, _id: 'woot', _rev: 'another'})
+      , state = {kind: 'person', photo: 'photo'}
+      , attachments = [{name: 'photo', data: buffer, content_type: 'application/octet-stream'}]
+      , mixin = {_id: 'woot', _rev: 'another'}
+      , db = this.mockDb(state, attachments, {doc_name: 'woot', rev: 'another'}, mixin)
+      ;
+
+    inst.to(db).save(function(e, doc) {
+      should(e).not.be.ok;
+      t.done();
+    });
+  }
+};

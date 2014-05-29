@@ -12,13 +12,19 @@ var empty = function() {}
 
 exports['Entity#to has #sync'] = {
   setUp: function(cb) {
+    var docName = '_design/entity'
+      , rev = 5
+      ;
     this.entity = function() {
       return odm.deliver('entity', this.views);
     };
     this.mockDb = function(doc, err, result) {
       var db = mock.mock('insert')
-        .takes(doc, '_design/entity', empty)
+        .takes(doc, {}, empty)
         .calls(2, [err, result]);
+      db.mock('get')
+        .takes(docName, empty)
+        .calls(1, [err, {_id: docName, _rev: rev}]);
       db.config = {url: true, db: true};
       return db;
     };

@@ -35,7 +35,7 @@ User = odm.deliver('user', function() {
   this.string('email', { required: true, format: 'email' });
 });
 
-Comment = odm.devlier('comment', function() {
+Comment = odm.deliver('comment', function() {
   this.string('title', { required: true });
   this.string('content');
   this.timestamps();
