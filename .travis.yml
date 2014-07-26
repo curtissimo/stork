@@ -6,3 +6,6 @@ services:
   - couchdb
 before_script:
   curl -X PUT localhost:5984/stork_test
+before_install: npm install -g gulp
+script:
+  - gulp ci
