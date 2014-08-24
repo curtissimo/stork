@@ -157,7 +157,7 @@ exports['datetime property builder'] = {
     t.done();
   }
 
-, 'ignores nun-numerical minimum values': function(t) {
+, 'ignores nun-date minimum values': function(t) {
     var Vehicle = odm.deliver('vehicle', function() {
           this.datetime('createdOn', {minimum: 'sherbet is a rat'});
         })
@@ -191,7 +191,7 @@ exports['datetime property builder'] = {
     t.done();
   }
 
-, 'ignores nun-numerical maximum values': function(t) {
+, 'ignores nun-date maximum values': function(t) {
     var Vehicle = odm.deliver('vehicle', function() {
           this.datetime('createdOn', {maximum: 'sherbet is a rat'});
         })

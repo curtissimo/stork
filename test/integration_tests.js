@@ -751,4 +751,40 @@ module.exports = integration({
       });
     });
   }
+
+, 'query entity#all for nested datetime types': function(t) {
+    var entityName = 'sorty'
+      , Entity = odm.deliver(entityName, function() {
+          this.string('s', {required: true});
+          this.object('nested', function () {
+            this.datetime('startedOn', {required: true});
+          });
+        })
+      , instances = [
+          Entity.new({s: 'text', nested: { startedOn: new Date(2012, 6, 14) }, extra: 1})
+        , Entity.new({s: 'txet', nested: { startedOn: new Date(2013, 9, 21) }, extra: -1})
+        ]
+      ;
+
+    async.series([
+      function(cb) { Entity.to(dburl).sync(cb); }
+    , function(cb) { instances[0].to(dburl).save(cb); }
+    , function(cb) { instances[1].to(dburl).save(cb); }
+    , function(cb) { Entity.from(dburl).all(cb); }
+    ], function(err, results) {
+      if (err) {
+        return t.done(err);
+      }
+      var objs = results[results.length - 1]
+        ;
+      t.doesNotThrow(function () {
+        objs.should.be.an.Array;
+        objs.should.have.length(2);
+        instances[0].s.should.be.equal(objs[0].s);
+        instances[0].nested.startedOn.getTime().should.be.equal(objs[0].nested.startedOn.getTime());
+        instances[0].extra.should.be.equal(objs[0].extra);
+      });
+      t.done();
+    });
+  }
 });
