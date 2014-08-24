@@ -1,4 +1,4 @@
-stork [![Build Status](https://travis-ci.org/curtissimo/stork.svg?branch=master)](https://travis-ci.org/realistschuckle/stork) [![Dependency Status](https://gemnasium.com/curtissimo/stork.svg)](https://gemnasium.com/curtissimo/stork)
+#stork [![Build Status](https://travis-ci.org/curtissimo/stork.svg?branch=master)](https://travis-ci.org/realistschuckle/stork) [![Dependency Status](https://gemnasium.com/curtissimo/stork.svg)](https://gemnasium.com/curtissimo/stork)
 
 Stork provides a layer of document management over the CouchDB with multitenant
 support and the use of CouchDB view indexing to support parent/child
