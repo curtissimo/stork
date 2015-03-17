@@ -37,10 +37,10 @@
   },
   "dependencies": {
     "async": "~0.9.0",
-    "nano": "^5.10.0",
+    "nano": "^5.0.0",
     "node-uuid": "^1.4.1",
-    "revalidator": "^0.2.0",
-    "should": "~4.0.4",
+    "revalidator": "~0.3.0",
+    "should": "^5.0.0",
     "utile": "~0.2.1"
   }
 }
