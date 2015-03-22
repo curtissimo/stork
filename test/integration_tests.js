@@ -10,7 +10,7 @@ var nano = require('nano')
 // integration test runs.
 var dbOverrides = {
       druthers: 'http://couchdb15:5984/stork_test',
-      rechuck: 'http://couchdb15:5984/stork_test'
+      rechuck: 'http://couchdb:5984/stork_test'
     }
   , dburl = dbOverrides[os.hostname()] || 'http://localhost:5984/stork_test'
   , db = nano(dburl)
@@ -118,6 +118,7 @@ module.exports = integration({
       , entity = odm.deliver(entityName, function() {
           this.string('s', {required: true});
           this.datetime('dt', {required: true});
+          this.timestamps();
         })
       , instance = entity.new({
           s: 'text'
@@ -137,14 +138,22 @@ module.exports = integration({
           return t.done(e);
         }
 
-        doc.dt = new Date(doc.dt);
-        doc.should.be.ok;
-        doc.should.have.property('_id', result._id);
-        doc.should.have.property('s', result.s);
-        doc.should.have.property('dt', result.dt);
-        doc.should.have.property('extra', result.extra);
-        doc.should.have.property('_rev', result._rev);
-        t.done();
+        try {
+          doc.createdOn = new Date(doc.createdOn);
+          doc.updatedOn = new Date(doc.updatedOn);
+          doc.dt = new Date(doc.dt);
+          doc.should.be.ok;
+          doc.should.have.property('_id', result._id);
+          doc.should.have.property('createdOn', result.createdOn);
+          doc.should.have.property('updatedOn');
+          doc.should.have.property('s', result.s);
+          doc.should.have.property('dt', result.dt);
+          doc.should.have.property('extra', result.extra);
+          doc.should.have.property('_rev', result._rev);
+          t.done();
+        } catch (e) {
+          t.done(e);
+        }
       });
     });
   }
