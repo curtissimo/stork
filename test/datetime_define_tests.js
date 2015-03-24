@@ -27,12 +27,19 @@ exports['datetime property builder'] = {
 
 , 'generates an instance in the schema': function(t) {
     var Vehicle = odm.deliver('vehicle', function() {
-          this.datetime('createdOn');
+          this.datetime('createdOn', { minimum: new Date() });
+
+          this.object('sub', function () {
+            this.datetime('date', { minimum: new Date() });
+          });
         })
       , vehicle = Vehicle.new()
-      , properties = vehicle['$schema'].properties
+      , schema = vehicle['$schema']
+      , properties = schema.properties
       ;
 
+    schema.coercedProperties.should.containEql('createdOn');
+    schema.coercedProperties.should.containEql('sub.date');
     properties.should.have.property('createdOn');
     properties.createdOn.should.have.property('type', 'number');
     properties.createdOn.should.not.have.properties([
@@ -216,6 +223,9 @@ exports['datetime property builder'] = {
         }
       , Vehicle = odm.deliver('vehicle', function() {
           this.datetime('manufacturerDate', options);
+          this.object('sub', function () {
+            this.datetime('anotherDate', {required: true, nullable: true})
+          });
         })
       , vehicle = Vehicle.new()
       , dates = [
@@ -233,6 +243,7 @@ exports['datetime property builder'] = {
 
     dates.forEach(function(date, i) {
       vehicle.manufacturerDate = date;
+      vehicle.sub = { anotherDate: date };
       vehicle.validate().valid.should.be[results[i]];
       if (!vehicle.manufacturerDate) {
         return;
