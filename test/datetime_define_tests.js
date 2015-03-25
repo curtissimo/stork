@@ -225,7 +225,7 @@ exports['datetime property builder'] = {
           this.datetime('manufacturerDate', options);
           this.object('sub', function () {
             this.object('sub', function () {
-              this.datetime('anotherDate', {required: true, nullable: true})
+              this.datetime('anotherDate', {required: true, nullable: true});
             });
           });
         })
