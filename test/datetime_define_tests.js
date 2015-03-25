@@ -224,7 +224,9 @@ exports['datetime property builder'] = {
       , Vehicle = odm.deliver('vehicle', function() {
           this.datetime('manufacturerDate', options);
           this.object('sub', function () {
-            this.datetime('anotherDate', {required: true, nullable: true})
+            this.object('sub', function () {
+              this.datetime('anotherDate', {required: true, nullable: true})
+            });
           });
         })
       , vehicle = Vehicle.new()
@@ -243,8 +245,13 @@ exports['datetime property builder'] = {
 
     dates.forEach(function(date, i) {
       vehicle.manufacturerDate = date;
-      vehicle.sub = { anotherDate: date };
-      vehicle.validate().valid.should.be[results[i]];
+      vehicle.sub = { sub: { anotherDate: date } };
+      try {
+        vehicle.validate().valid.should.be[results[i]];
+      } catch(e) {
+        console.error('ERROR:', i, date, vehicle.validate().errors);
+        throw e;
+      }
       if (!vehicle.manufacturerDate) {
         return;
       }
