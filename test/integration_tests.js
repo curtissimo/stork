@@ -596,9 +596,11 @@ module.exports = integration({
 , 'get composed objects through withXXX query': function(t) {
     var Comment = odm.deliver('comment', function() {
           this.string('text');
+          this.timestamps();
         })
       , Response = odm.deliver('response', function() {
           this.string('text');
+          this.timestamps();
         })
       , Discussion = odm.deliver('discussion', function() {
           this.string('text');
@@ -635,22 +637,25 @@ module.exports = integration({
       if (err) {
         return t.done(err);
       }
-      try {
-        Discussion.from(dburl).withComments(discussionId, function(e, d) {
-          var i;
-          if (e) {
-            return t.done(e);
-          }
-          d.text.should.equal('First Post!');
-          d.comments.should.have.length(3);
-          for (i = 0; i < 3; i += 1) {
-            d.comments[i].should.have.property('_id', comments[i]._id);
-          }
-          t.done();
-        });
-      } catch (e) {
-        t.done(e);
-      }
+      Discussion.from(dburl).withComments(discussionId, function(e, d) {
+        var i;
+        if (e) {
+          return t.done(e);
+        }
+        try {
+            d.text.should.equal('First Post!');
+            d.comments.should.have.length(3);
+            for (i = 0; i < 3; i += 1) {
+              d.comments[i].should.have.property('_id', comments[i]._id);
+              d.comments[i].should.have.property('createdOn');
+              d.comments[i].createdOn.should.be.instanceof(Date);
+              d.comments[i].createdOn.should.be.ok;
+            }
+            t.done();
+        } catch (e) {
+          t.done(e);
+        }
+      });
     });
   }
 
