@@ -802,4 +802,48 @@ module.exports = integration({
       t.done();
     });
   }
+
+, 'execute custom query for entity from special method on range of values': function(t) {
+    var Entity = odm.deliver('someEntity', function() {
+          this.string('s');
+          this.string('dt');
+          this.view('someView', function(d, e) {
+            if(d.s) {e(d.s);}
+          });
+        })
+      , nakeds = [
+          {s: 'key1', extra: 1}
+        , {s: 'key2', dt: 'key1', extra: -1}
+        , {s: 'akey2', dt: 'key1', extra: -1}
+        ]
+      , instances = [
+          Entity.new(nakeds[0])
+        , Entity.new(nakeds[1])
+        , Entity.new(nakeds[2])
+        ]
+      , from = Entity.from(dburl)
+      ;
+
+    async.series([
+      function(cb) { Entity.to(dburl).sync(cb); }
+    , function(cb) { instances[0].to(dburl).save(cb); }
+    , function(cb) { instances[1].to(dburl).save(cb); }
+    , function(cb) { instances[2].to(dburl).save(cb); }
+    ], function(err, results) {
+      if (err) {
+        return t.done(err);
+      }
+      Entity.from(db).someView('key1', 'key3', function(err, results) {
+        if (err) {
+          return t.done(err);
+        }
+        try {
+          results.should.have.length(2);
+          t.done();
+        } catch (e) {
+          t.done(e);
+        }
+      });
+    });
+  }
 });

@@ -116,3 +116,49 @@ exports['Entity#from provides a query function'] = {
     });
   }
 };
+
+exports['Entity#from provides a query function with from and to'] = {
+  setUp: function(cb) {
+    var viewName = this.viewName = util.randomString(10).replace('_', '')
+      , entityName = this.entityName = util.randomString(10).replace('_', '')
+      , fromId = this.fromId = util.randomString(10).replace('_', '')
+      , toId = this.toId = util.randomString(10).replace('_', '')
+      ;
+    
+    this.Entity = odm.deliver(this.entityName, function() {
+      this.string('s');
+      this.datetime('dt');
+      this.view(viewName, function (doc, emitKey) { emitKey(doc.s); });
+    });
+    this.mockDb = function(err, result) {
+      var db = mock.mock('view')
+        .takes(entityName, viewName, {include_docs: true, startkey: fromId, endkey: toId}, empty)
+        .calls(3, [err, result]);
+      db.config = {url: true, db: true};
+      return db;
+    };
+
+    // Because node mock is stupid loud.
+    this.errorStream = console.error;
+    console.error = function() {};
+    cb();
+  }
+
+, tearDown: function(cb) {
+    // Because node mock is stupid loud.
+    console.error = this.errorStream;
+    cb();
+  }
+
+, 'that invokes the db#view(entityName, viewName, ...) method': function(t) {
+    var Entity = this.Entity
+      , value = {}
+      , viewName = util.randomString(10).replace('_', '')
+      , db = this.mockDb(null, value)
+      ;
+    Entity.from(db)[this.viewName](this.fromId, this.toId, function(err, result) {
+      db.assertThrows();
+      t.done();
+    });
+  }
+};
